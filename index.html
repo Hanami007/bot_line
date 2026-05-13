@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<meta http-equiv="Permissions-Policy" content="camera=*">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ลงเวลาทำงาน</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
@@ -298,7 +301,7 @@
   <!-- Camera -->
   <div class="camera-card">
     <div class="camera-wrap">
-      <video id="video" autoplay playsinline muted></video>
+      <video id="video" autoplay playsinline muted webkit-playsinline></video>
       <canvas id="canvas"></canvas>
       <div class="camera-overlay" id="cam-overlay">
         <div class="overlay-icon">📷</div>
@@ -385,17 +388,34 @@ async function initLiff() {
 // ===== CAMERA =====
 async function startCamera() {
   try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
+    // iOS ต้องการ constraints แบบนี้
+    const constraints = {
+      video: {
+        facingMode: { ideal: "user" },
+        width:  { ideal: 640 },
+        height: { ideal: 480 }
+      },
       audio: false
-    });
+    };
+
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
     const video = document.getElementById("video");
     video.srcObject = stream;
+
+    // iOS ต้องการ play() แบบ explicit
+    video.onloadedmetadata = function() {
+      video.play().catch(err => console.log("play error:", err));
+    };
+
     document.getElementById("cam-overlay").classList.add("hidden");
+
   } catch (err) {
-    document.getElementById("cam-overlay").querySelector(".overlay-text").textContent =
-      "ไม่สามารถเปิดกล้องได้ กรุณาอนุญาตการเข้าถึงกล้อง";
-    console.error("Camera error:", err);
+    console.error("Camera error:", err.name, err.message);
+    const overlay = document.getElementById("cam-overlay");
+    overlay.querySelector(".overlay-icon").textContent = "⚠️";
+    overlay.querySelector(".overlay-text").textContent =
+      "กรุณาอนุญาตการใช้กล้อง\nแล้วรีเฟรชหน้านี้";
+    overlay.classList.remove("hidden");
   }
 }
 

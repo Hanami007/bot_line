@@ -469,55 +469,6 @@ async function submitAttendance() {
   };
 
   try {
-    // ใช้ iframe trick แทน fetch เพื่อหลีกเลี่ยง CORS
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = GAS_URL;
-    form.target = "hidden-iframe";
-
-    const input = document.createElement("input");
-    input.type  = "hidden";
-    input.name  = "data";
-    input.value = JSON.stringify(payload);
-    form.appendChild(input);
-
-    const iframe = document.createElement("iframe");
-    iframe.name  = "hidden-iframe";
-    iframe.style.display = "none";
-    document.body.appendChild(iframe);
-    document.body.appendChild(form);
-    form.submit();
-
-    // รอ 3 วินาทีแล้วถือว่าสำเร็จ
-    setTimeout(() => {
-      setStatus(
-        `✅ ลงเวลา${roundLabels[selectedRound]}สำเร็จ!\n` +
-        `เวลา: ${new Date().toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" })}`,
-        "success"
-      );
-      document.body.removeChild(form);
-      document.body.removeChild(iframe);
-    }, 3000);
-
-  } catch (err) {
-    setStatus("❌ ส่งข้อมูลไม่สำเร็จ: " + err.message, "error");
-    document.getElementById("submit-btn").disabled = false;
-  }
-}
-  if (!capturedImage) return;
-
-  setStatus("⏳ กำลังส่งข้อมูล...", "loading");
-  document.getElementById("submit-btn").disabled = true;
-
-  const payload = {
-    lineUserId:   lineUserId,
-    employeeName: employeeName,
-    round:        selectedRound,
-    imageBase64:  capturedImage,
-    timestamp:    new Date().toISOString()
-  };
-
-  try {
     await fetch(GAS_URL, {
       method:  "POST",
       mode:    "no-cors",
@@ -533,8 +484,10 @@ async function submitAttendance() {
     );
 
   } catch (err) {
+    console.error("Submit error:", err);
     setStatus("❌ ส่งข้อมูลไม่สำเร็จ: " + err.message, "error");
     document.getElementById("submit-btn").disabled = false;
+  }
 }
 
 function setStatus(msg, type) {

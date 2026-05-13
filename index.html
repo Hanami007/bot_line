@@ -455,7 +455,9 @@ function retake() {
 
 // ===== SUBMIT =====
 async function submitAttendance() {
-  if (!capturedImage) return;
+  if (!capturedImage) {
+    return;
+  }
 
   setStatus("⏳ กำลังส่งข้อมูล...", "loading");
   document.getElementById("submit-btn").disabled = true;

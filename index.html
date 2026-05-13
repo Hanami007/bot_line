@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ลงเวลาทำงาน</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --primary: #06C755;
+    --primary-dark: #04A344;
+    --danger: #E24B4A;
+    --warning: #BA7517;
+    --info: #185FA5;
+    --bg: #F0F2F5;
+    --card: #FFFFFF;
+    --text: #1A1A2E;
+    --text-sub: #6B7280;
+    --border: #E5E7EB;
+    --round1: #1D9E75;
+    --round2: #BA7517;
+    --round3: #185FA5;
+    --round4: #993C1D;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    width: 100%;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: #E8F5E9;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; overflow: hidden;
+  }
+  .header-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .header-name { font-size: 15px; font-weight: 600; }
+  .header-sub { font-size: 12px; color: var(--text-sub); }
+  .header-time {
+    margin-left: auto;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-sub);
+    text-align: right;
+  }
+
+  /* ===== MAIN ===== */
+  .main { width: 100%; max-width: 480px; padding: 16px; flex: 1; }
+
+  /* ===== ROUND SELECTOR ===== */
+  .section-label {
+    font-size: 12px; font-weight: 600;
+    color: var(--text-sub);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .round-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .round-btn {
+    border: 2px solid var(--border);
+    background: var(--card);
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all .15s;
+    text-align: left;
+  }
+  .round-btn:active { transform: scale(0.97); }
+  .round-btn.selected {
+    border-color: currentColor;
+    background: #F8FFFE;
+  }
+  .round-btn[data-round="1"] { color: var(--round1); }
+  .round-btn[data-round="2"] { color: var(--round2); }
+  .round-btn[data-round="3"] { color: var(--round3); }
+  .round-btn[data-round="4"] { color: var(--round4); }
+  .round-btn.selected { background: color-mix(in srgb, currentColor 8%, white); }
+  .round-icon { font-size: 20px; margin-bottom: 4px; }
+  .round-name { font-size: 14px; font-weight: 600; }
+  .round-time { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+
+  /* ===== CAMERA ===== */
+  .camera-card {
+    background: var(--card);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .camera-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #111;
+    overflow: hidden;
+  }
+  #video {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1); /* mirror */
+    display: block;
+  }
+  #canvas { display: none; }
+  .camera-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 8px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+  }
+  .camera-overlay.hidden { display: none; }
+  .overlay-icon { font-size: 48px; }
+  .overlay-text { font-size: 14px; opacity: 0.8; }
+
+  /* preview */
+  #preview-wrap { display: none; position: relative; }
+  #preview { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+  .preview-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(0,0,0,0.6); color: white;
+    font-size: 11px; padding: 4px 10px;
+    border-radius: 20px; backdrop-filter: blur(4px);
+  }
+  .retake-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(0,0,0,0.6); color: white;
+    font-size: 12px; padding: 6px 12px;
+    border-radius: 20px; border: none; cursor: pointer;
+    backdrop-filter: blur(4px);
+  }
+
+  /* shutter */
+  .camera-footer {
+    padding: 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .shutter-btn {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 4px solid white;
+    box-shadow: 0 0 0 2px var(--primary);
+    cursor: pointer;
+    transition: all .15s;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+  .shutter-btn:active { transform: scale(0.92); }
+  .shutter-btn:disabled { background: var(--border); box-shadow: 0 0 0 2px var(--border); cursor: default; }
+
+  /* ===== TIMESTAMP INFO ===== */
+  .info-row {
+    display: flex; gap: 8px; margin-bottom: 16px;
+  }
+  .info-chip {
+    flex: 1; background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 12px;
+    font-size: 12px; color: var(--text-sub);
+  }
+  .info-chip strong { display: block; font-size: 14px; color: var(--text); margin-bottom: 2px; }
+
+  /* ===== SUBMIT ===== */
+  .submit-btn {
+    width: 100%; padding: 16px;
+    background: var(--primary);
+    color: white; font-size: 16px; font-weight: 600;
+    font-family: 'Sarabun', sans-serif;
+    border: none; border-radius: 14px;
+    cursor: pointer; transition: all .15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .submit-btn:active { transform: scale(0.98); background: var(--primary-dark); }
+  .submit-btn:disabled { background: var(--border); color: var(--text-sub); cursor: default; }
+
+  /* ===== STATUS ===== */
+  .status-box {
+    display: none;
+    margin-top: 12px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 14px; font-weight: 500;
+    text-align: center;
+  }
+  .status-box.success { background: #E8F5E9; color: #1B5E20; display: block; }
+  .status-box.error   { background: #FFEBEE; color: #B71C1C; display: block; }
+  .status-box.loading { background: #E3F2FD; color: #0D47A1; display: block; }
+
+  /* ===== LOADING SCREEN ===== */
+  #loading-screen {
+    position: fixed; inset: 0;
+    background: white;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 12px; z-index: 100;
+  }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #loading-screen p { font-size: 14px; color: var(--text-sub); }
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loading-screen">
+  <div style="font-size:32px">🕐</div>
+  <div class="spinner"></div>
+  <p>กำลังโหลด...</p>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-avatar">
+    <img id="profile-pic" src="" alt="" onerror="this.style.display='none'">
+    <span id="profile-initial" style="font-size:16px;font-weight:600;color:var(--primary)"></span>
+  </div>
+  <div>
+    <div class="header-name" id="profile-name">กำลังโหลด...</div>
+    <div class="header-sub">ระบบลงเวลาทำงาน</div>
+  </div>
+  <div class="header-time" id="clock"></div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Round Selector -->
+  <div class="section-label">เลือกรอบการลงเวลา</div>
+  <div class="round-grid">
+    <button class="round-btn selected" data-round="1" onclick="selectRound(1)">
+      <div class="round-icon">🌅</div>
+      <div class="round-name">เข้างาน</div>
+      <div class="round-time">รอบที่ 1</div>
+    </button>
+    <button class="round-btn" data-round="2" onclick="selectRound(2)">
+      <div class="round-icon">🍱</div>
+      <div class="round-name">พักเที่ยง</div>
+      <div class="round-time">รอบที่ 2</div>
+    </button>
+    <button class="round-btn" data-round="3" onclick="selectRound(3)">
+      <div class="round-icon">🔄</div>
+      <div class="round-name">กลับจากพัก</div>
+      <div class="round-time">รอบที่ 3</div>
+    </button>
+    <button class="round-btn" data-round="4" onclick="selectRound(4)">
+      <div class="round-icon">🌆</div>
+      <div class="round-name">เลิกงาน</div>
+      <div class="round-time">รอบที่ 4</div>
+    </button>
+  </div>
+
+  <!-- Info Row -->
+  <div class="info-row">
+    <div class="info-chip">
+      <strong id="display-date">-</strong>
+      วันที่
+    </div>
+    <div class="info-chip">
+      <strong id="display-time">-</strong>
+      เวลาปัจจุบัน
+    </div>
+  </div>
+
+  <!-- Camera -->
+  <div class="camera-card">
+    <div class="camera-wrap">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="canvas"></canvas>
+      <div class="camera-overlay" id="cam-overlay">
+        <div class="overlay-icon">📷</div>
+        <div class="overlay-text">กำลังเปิดกล้อง...</div>
+      </div>
+      <div id="preview-wrap">
+        <img id="preview" alt="รูปที่ถ่าย">
+        <div class="preview-badge" id="preview-badge">รอบที่ 1 — เข้างาน</div>
+        <button class="retake-btn" onclick="retake()">🔄 ถ่ายใหม่</button>
+      </div>
+    </div>
+    <div class="camera-footer">
+      <button class="shutter-btn" id="shutter-btn" onclick="capture()" title="ถ่ายรูป">📸</button>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <button class="submit-btn" id="submit-btn" onclick="submitAttendance()" disabled>
+    ✅ ยืนยันการลงเวลา
+  </button>
+
+  <!-- Status -->
+  <div class="status-box" id="status-box"></div>
+
+</div>
+
+<script>
+// ===== CONFIG — แก้ค่านี้ =====
+const GAS_URL   = "YOUR_GAS_WEB_APP_URL";  // URL จาก Deploy GAS
+const LIFF_ID   = "YOUR_LIFF_ID";          // LIFF ID จาก LINE Developers
+
+// ===== STATE =====
+let lineUserId    = "";
+let employeeName  = "";
+let selectedRound = 1;
+let capturedImage = null;
+let stream        = null;
+
+const roundLabels = ["", "เข้างาน", "พักเที่ยง", "กลับจากพัก", "เลิกงาน"];
+
+// ===== CLOCK =====
+function updateClock() {
+  const now = new Date();
+  const opts = { timeZone: "Asia/Bangkok" };
+  document.getElementById("clock").innerHTML =
+    now.toLocaleTimeString("th-TH", { ...opts, hour: "2-digit", minute: "2-digit" }) + "<br>" +
+    now.toLocaleDateString("th-TH", { ...opts, weekday: "short" });
+  document.getElementById("display-date").textContent =
+    now.toLocaleDateString("th-TH", { ...opts, day: "numeric", month: "short", year: "numeric" });
+  document.getElementById("display-time").textContent =
+    now.toLocaleTimeString("th-TH", { ...opts, hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ===== LIFF INIT =====
+async function initLiff() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    if (!liff.isLoggedIn()) { liff.login(); return; }
+
+    const profile = await liff.getProfile();
+    lineUserId   = profile.userId;
+    employeeName = profile.displayName;
+
+    document.getElementById("profile-name").textContent = profile.displayName;
+    if (profile.pictureUrl) {
+      document.getElementById("profile-pic").src = profile.pictureUrl;
+    } else {
+      document.getElementById("profile-initial").textContent = profile.displayName.charAt(0);
+    }
+  } catch (err) {
+    // fallback สำหรับทดสอบนอก LINE
+    lineUserId   = "U_TEST_ID";
+    employeeName = "ทดสอบ";
+    document.getElementById("profile-name").textContent = "ทดสอบ (นอก LINE)";
+    console.warn("LIFF error:", err);
+  }
+
+  await startCamera();
+  document.getElementById("loading-screen").style.display = "none";
+}
+
+// ===== CAMERA =====
+async function startCamera() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
+      audio: false
+    });
+    const video = document.getElementById("video");
+    video.srcObject = stream;
+    document.getElementById("cam-overlay").classList.add("hidden");
+  } catch (err) {
+    document.getElementById("cam-overlay").querySelector(".overlay-text").textContent =
+      "ไม่สามารถเปิดกล้องได้ กรุณาอนุญาตการเข้าถึงกล้อง";
+    console.error("Camera error:", err);
+  }
+}
+
+// ===== ROUND SELECT =====
+function selectRound(round) {
+  selectedRound = round;
+  document.querySelectorAll(".round-btn").forEach(b => b.classList.remove("selected"));
+  document.querySelector(`.round-btn[data-round="${round}"]`).classList.add("selected");
+  retake();
+}
+
+// ===== CAPTURE =====
+function capture() {
+  const video  = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  canvas.width  = video.videoWidth  || 640;
+  canvas.height = video.videoHeight || 480;
+  const ctx = canvas.getContext("2d");
+  ctx.translate(canvas.width, 0);
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, 0, 0);
+
+  // Timestamp บนรูป
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = "rgba(0,0,0,0.5)";
+  ctx.fillRect(0, canvas.height - 36, canvas.width, 36);
+  ctx.fillStyle = "white";
+  ctx.font = "13px Sarabun, sans-serif";
+  const now = new Date();
+  const timeLabel = now.toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
+  ctx.fillText(`${employeeName}  |  ${timeLabel}  |  รอบ ${selectedRound}: ${roundLabels[selectedRound]}`, 10, canvas.height - 12);
+
+  // compress เป็น JPEG quality 0.7
+  capturedImage = canvas.toDataURL("image/jpeg", 0.7).split(",")[1];
+
+  // แสดง preview
+  document.getElementById("preview").src = canvas.toDataURL("image/jpeg", 0.7);
+  document.getElementById("preview-badge").textContent = `รอบที่ ${selectedRound} — ${roundLabels[selectedRound]}`;
+  document.getElementById("preview-wrap").style.display = "block";
+  document.getElementById("video").style.display = "none";
+  document.getElementById("shutter-btn").disabled = true;
+  document.getElementById("submit-btn").disabled = false;
+
+  if (stream) stream.getTracks().forEach(t => t.stop());
+}
+
+// ===== RETAKE =====
+function retake() {
+  capturedImage = null;
+  document.getElementById("preview-wrap").style.display = "none";
+  document.getElementById("video").style.display = "block";
+  document.getElementById("shutter-btn").disabled = false;
+  document.getElementById("submit-btn").disabled = true;
+  setStatus("", "");
+  startCamera();
+}
+
+// ===== SUBMIT =====
+async function submitAttendance() {
+  if (!capturedImage) return;
+
+  setStatus("⏳ กำลังส่งข้อมูล...", "loading");
+  document.getElementById("submit-btn").disabled = true;
+
+  const payload = {
+    lineUserId:   lineUserId,
+    employeeName: employeeName,
+    round:        selectedRound,
+    imageBase64:  capturedImage,
+    timestamp:    new Date().toISOString()
+  };
+
+  try {
+    const res  = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+
+    if (json.success) {
+      setStatus(`✅ ลงเวลา${roundLabels[selectedRound]}สำเร็จ!\nเวลา: ${new Date().toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" })}`, "success");
+    } else {
+      throw new Error(json.error || "เกิดข้อผิดพลาด");
+    }
+  } catch (err) {
+    setStatus("❌ ส่งข้อมูลไม่สำเร็จ: " + err.message, "error");
+    document.getElementById("submit-btn").disabled = false;
+  }
+}
+
+function setStatus(msg, type) {
+  const box = document.getElementById("status-box");
+  box.className = "status-box" + (type ? " " + type : "");
+  box.textContent = msg;
+  box.style.whiteSpace = "pre-line";
+}
+
+// ===== START =====
+initLiff();
+</script>
+</body>
+</html>

@@ -281,37 +281,17 @@ async function submitLeave() {
   });
 
   try {
-    // สร้าง Iframe ลับ
-    const iframe = document.createElement("iframe");
-    iframe.name = "leave-target";
-    iframe.style.display = "none";
-    document.body.appendChild(iframe);
+    // ส่งข้อมูลแบบ Raw JSON (เหมือนหน้า index.html)
+    await fetch(GAS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: payload
+    });
 
-    // สร้าง Form ส่งข้อมูล
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = GAS_URL;
-    form.target = "leave-target";
-
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = "data"; // ส่งเป็น parameter ชื่อ data
-    input.value = payload;
-
-    form.appendChild(input);
-    document.body.appendChild(form);
-    form.submit();
-
-    // หน่วงเวลาเล็กน้อยแล้วแสดงผลสำเร็จ
-    setTimeout(() => {
-      setStatus(
-        `✅ ส่งคำขอ${leaveLabels[leaveType]}สำเร็จ!\nวันที่: ${dateStart} ถึง ${dateEnd}\nรอผู้บริหารอนุมัติ`,
-        "success"
-      );
-      document.body.removeChild(form);
-      document.body.removeChild(iframe);
-    }, 2500);
-
+    setStatus(
+      `✅ ส่งคำขอ${leaveLabels[leaveType]}สำเร็จ!\nวันที่: ${dateStart} ถึง ${dateEnd}\nรอผู้บริหารอนุมัติ`,
+      "success"
+    );
   } catch (err) {
     console.error("Submit error:", err);
     setStatus("❌ เกิดข้อผิดพลาด: " + err.message, "error");

@@ -204,6 +204,20 @@
   .submit-btn:active { transform: scale(0.98); background: var(--primary-dark); }
   .submit-btn:disabled { background: var(--border); color: var(--text-sub); cursor: default; }
 
+  /* ===== LEAVE BUTTON ===== */
+  .leave-btn {
+    width: 100%; padding: 14px;
+    background: var(--card);
+    color: var(--info); font-size: 15px; font-weight: 600;
+    font-family: 'Sarabun', sans-serif;
+    border: 2px solid var(--info); border-radius: 14px;
+    cursor: pointer; transition: all .15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 16px;
+    text-decoration: none;
+  }
+  .leave-btn:active { transform: scale(0.98); background: #f0f7ff; }
+
   /* ===== STATUS ===== */
   .status-box {
     display: none;
@@ -326,11 +340,16 @@
   <!-- Status -->
   <div class="status-box" id="status-box"></div>
 
+  <!-- Leave Link -->
+  <a href="leave.html" class="leave-btn">
+    📅 แจ้งลาหยุดงาน
+  </a>
+
 </div>
 
 <script>
 // ===== CONFIG — แก้ค่านี้ =====
-const GAS_URL   = "https://script.google.com/macros/s/AKfycbyop8FfmFVLsOqWKdFB_z6HQvCUlAqlMYOKzv29JxsszTZwMSlxGbHYSLOGHLyI6NV0/exec";  // URL จาก Deploy GAS
+const GAS_URL   = "https://script.google.com/macros/s/AKfycbzzt_kiY2n8F2RrEbTyNuUxhdmJmOeLUvCzjJRRTcZ2kWUmNKu4pviAr1jPolGJyyPV/exec";  // URL จาก Deploy GAS
 const LIFF_ID   = "2010074074-oOwr1JIe";          // LIFF ID จาก LINE Developers
 
 // ===== STATE =====

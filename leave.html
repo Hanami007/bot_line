@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>แจ้งลางาน</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+  :root {
+    --primary: #06C755; --primary-dark: #04A344;
+    --bg: #F0F2F5; --card: #FFFFFF;
+    --text: #1A1A2E; --text-sub: #6B7280; --border: #E5E7EB;
+    --sick: #E24B4A; --personal: #185FA5; --vacation: #1D9E75;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+  .header { width: 100%; background: var(--card); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; }
+  .header-avatar { width: 38px; height: 38px; border-radius: 50%; background: #E8F5E9; display: flex; align-items: center; justify-content: center; font-size: 18px; overflow: hidden; }
+  .header-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .header-name { font-size: 15px; font-weight: 600; }
+  .header-sub { font-size: 12px; color: var(--text-sub); }
+  .main { width: 100%; max-width: 480px; padding: 16px; flex: 1; }
+  .section-label { font-size: 12px; font-weight: 600; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .leave-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+  .leave-btn { border: 2px solid var(--border); background: var(--card); border-radius: 12px; padding: 12px 8px; cursor: pointer; transition: all .15s; text-align: center; }
+  .leave-btn:active { transform: scale(0.97); }
+  .leave-btn[data-type="sick"] { color: var(--sick); }
+  .leave-btn[data-type="personal"] { color: var(--personal); }
+  .leave-btn[data-type="vacation"] { color: var(--vacation); }
+  .leave-btn.selected { border-color: currentColor; background: color-mix(in srgb, currentColor 8%, white); }
+  .leave-icon { font-size: 24px; margin-bottom: 4px; }
+  .leave-name { font-size: 13px; font-weight: 600; }
+  .card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 16px; margin-bottom: 16px; }
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 13px; font-weight: 600; color: var(--text-sub); margin-bottom: 6px; display: block; }
+  .form-input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; font-family: 'Sarabun', sans-serif; color: var(--text); background: var(--bg); }
+  .form-input:focus { outline: none; border-color: var(--primary); }
+  textarea.form-input { resize: none; height: 80px; }
+  .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  /* Camera for medical cert */
+  .cert-section { display: none; }
+  .cert-section.show { display: block; }
+  .camera-wrap { position: relative; width: 100%; aspect-ratio: 4/3; background: #111; border-radius: 12px; overflow: hidden; margin-bottom: 8px; }
+  #cert-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  #cert-canvas { display: none; }
+  .camera-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.6); color: white; }
+  .camera-overlay.hidden { display: none; }
+  #cert-preview-wrap { display: none; position: relative; }
+  #cert-preview { width: 100%; border-radius: 12px; display: block; }
+  .retake-btn { margin-top: 8px; width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; font-size: 13px; cursor: pointer; font-family: 'Sarabun', sans-serif; }
+  .shutter-wrap { display: flex; justify-content: center; margin: 8px 0; }
+  .shutter-btn { width: 56px; height: 56px; border-radius: 50%; background: var(--primary); border: 4px solid white; box-shadow: 0 0 0 2px var(--primary); cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+  .shutter-btn:disabled { background: var(--border); box-shadow: 0 0 0 2px var(--border); }
+
+  .submit-btn { width: 100%; padding: 16px; background: var(--primary); color: white; font-size: 16px; font-weight: 600; font-family: 'Sarabun', sans-serif; border: none; border-radius: 14px; cursor: pointer; transition: all .15s; }
+  .submit-btn:active { background: var(--primary-dark); transform: scale(0.98); }
+  .submit-btn:disabled { background: var(--border); color: var(--text-sub); cursor: default; }
+  .status-box { display: none; margin-top: 12px; padding: 14px 16px; border-radius: 12px; font-size: 14px; font-weight: 500; text-align: center; white-space: pre-line; }
+  .status-box.success { background: #E8F5E9; color: #1B5E20; display: block; }
+  .status-box.error   { background: #FFEBEE; color: #B71C1C; display: block; }
+  .status-box.loading { background: #E3F2FD; color: #0D47A1; display: block; }
+  #loading-screen { position: fixed; inset: 0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 100; }
+  .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #loading-screen p { font-size: 14px; color: var(--text-sub); }
+  .back-btn { font-size: 13px; color: var(--primary); text-decoration: none; margin-left: auto; }
+</style>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div style="font-size:32px">📋</div>
+  <div class="spinner"></div>
+  <p>กำลังโหลด...</p>
+</div>
+
+<div class="header">
+  <div class="header-avatar">
+    <img id="profile-pic" src="" alt="" onerror="this.style.display='none'">
+    <span id="profile-initial" style="font-size:16px;font-weight:600;color:var(--primary)"></span>
+  </div>
+  <div>
+    <div class="header-name" id="profile-name">กำลังโหลด...</div>
+    <div class="header-sub">แจ้งลางาน</div>
+  </div>
+  <a class="back-btn" href="index.html">← ลงเวลา</a>
+</div>
+
+<div class="main">
+
+  <!-- ประเภทการลา -->
+  <div class="section-label">ประเภทการลา</div>
+  <div class="leave-grid">
+    <button class="leave-btn selected" data-type="sick" onclick="selectType('sick')">
+      <div class="leave-icon">🤒</div>
+      <div class="leave-name">ลาป่วย</div>
+    </button>
+    <button class="leave-btn" data-type="personal" onclick="selectType('personal')">
+      <div class="leave-icon">📝</div>
+      <div class="leave-name">ลากิจ</div>
+    </button>
+    <button class="leave-btn" data-type="vacation" onclick="selectType('vacation')">
+      <div class="leave-icon">🏖️</div>
+      <div class="leave-name">ลาพักร้อน</div>
+    </button>
+  </div>
+
+  <!-- ฟอร์ม -->
+  <div class="card">
+    <!-- วันที่ -->
+    <div class="form-group">
+      <label class="form-label">วันที่ลา</label>
+      <div class="date-row">
+        <div>
+          <label class="form-label" style="font-size:11px">วันเริ่มต้น</label>
+          <input type="date" class="form-input" id="date-start">
+        </div>
+        <div>
+          <label class="form-label" style="font-size:11px">วันสิ้นสุด</label>
+          <input type="date" class="form-input" id="date-end">
+        </div>
+      </div>
+    </div>
+
+    <!-- หมายเหตุ -->
+    <div class="form-group">
+      <label class="form-label" id="note-label">หมายเหตุ / อาการเบื้องต้น</label>
+      <textarea class="form-input" id="note" placeholder="กรอกรายละเอียด..."></textarea>
+    </div>
+
+    <!-- ใบรับรองแพทย์ (ลาป่วย) -->
+    <div class="cert-section show" id="cert-section">
+      <label class="form-label">ใบรับรองแพทย์ <span style="color:var(--text-sub);font-weight:400">(ถ้ามี)</span></label>
+      <div class="camera-wrap" id="cert-camera-wrap">
+        <video id="cert-video" autoplay playsinline muted webkit-playsinline></video>
+        <canvas id="cert-canvas"></canvas>
+        <div class="camera-overlay" id="cert-overlay">
+          <div style="font-size:40px">📄</div>
+          <div style="font-size:13px;opacity:.8">กำลังเปิดกล้อง...</div>
+        </div>
+      </div>
+      <div id="cert-preview-wrap">
+        <img id="cert-preview" alt="ใบรับรองแพทย์">
+        <button class="retake-btn" onclick="retakeCert()">🔄 ถ่ายใหม่</button>
+      </div>
+      <div class="shutter-wrap">
+        <button class="shutter-btn" id="cert-shutter" onclick="captureCert()">📸</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="submit-btn" id="submit-btn" onclick="submitLeave()">
+    📋 ส่งคำขอลา
+  </button>
+  <div class="status-box" id="status-box"></div>
+</div>
+
+<script>
+const GAS_URL  = "YOUR_GAS_WEB_APP_URL";
+const LIFF_ID  = "YOUR_LIFF_ID";
+
+let lineUserId   = "";
+let employeeName = "";
+let leaveType    = "sick";
+let certImage    = null;
+let certStream   = null;
+
+const leaveLabels = { sick: "ลาป่วย", personal: "ลากิจ", vacation: "ลาพักร้อน" };
+
+// ตั้งวันที่ default
+window.onload = function() {
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("date-start").value = today;
+  document.getElementById("date-end").value   = today;
+};
+
+async function initLiff() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    if (!liff.isLoggedIn()) { liff.login(); return; }
+    const profile  = await liff.getProfile();
+    lineUserId     = profile.userId;
+    employeeName   = profile.displayName;
+    document.getElementById("profile-name").textContent = profile.displayName;
+    if (profile.pictureUrl) {
+      document.getElementById("profile-pic").src = profile.pictureUrl;
+    } else {
+      document.getElementById("profile-initial").textContent = profile.displayName.charAt(0);
+    }
+  } catch (err) {
+    lineUserId   = "U_TEST_ID";
+    employeeName = "ทดสอบ";
+    document.getElementById("profile-name").textContent = "ทดสอบ (นอก LINE)";
+  }
+  await startCertCamera();
+  document.getElementById("loading-screen").style.display = "none";
+}
+
+async function startCertCamera() {
+  try {
+    certStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 960 } },
+      audio: false
+    });
+    const video = document.getElementById("cert-video");
+    video.srcObject = certStream;
+    video.onloadedmetadata = () => video.play();
+    document.getElementById("cert-overlay").classList.add("hidden");
+  } catch(err) {
+    document.getElementById("cert-overlay").querySelector("div:last-child").textContent = "ไม่สามารถเปิดกล้องได้";
+  }
+}
+
+function selectType(type) {
+  leaveType = type;
+  document.querySelectorAll(".leave-btn").forEach(b => b.classList.remove("selected"));
+  document.querySelector(`.leave-btn[data-type="${type}"]`).classList.add("selected");
+
+  const certSection  = document.getElementById("cert-section");
+  const noteLabel    = document.getElementById("note-label");
+
+  if (type === "sick") {
+    certSection.classList.add("show");
+    noteLabel.textContent = "หมายเหตุ / อาการเบื้องต้น";
+    startCertCamera();
+  } else {
+    certSection.classList.remove("show");
+    noteLabel.textContent = type === "personal" ? "หมายเหตุ / เหตุผลการลา" : "หมายเหตุ";
+    certImage = null;
+    if (certStream) certStream.getTracks().forEach(t => t.stop());
+  }
+}
+
+function captureCert() {
+  const video  = document.getElementById("cert-video");
+  const canvas = document.getElementById("cert-canvas");
+  canvas.width  = video.videoWidth  || 1280;
+  canvas.height = video.videoHeight || 960;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video, 0, 0);
+  certImage = canvas.toDataURL("image/jpeg", 0.7).split(",")[1];
+  document.getElementById("cert-preview").src = canvas.toDataURL("image/jpeg", 0.7);
+  document.getElementById("cert-preview-wrap").style.display = "block";
+  document.getElementById("cert-camera-wrap").style.display  = "none";
+  document.getElementById("cert-shutter").disabled = true;
+  if (certStream) certStream.getTracks().forEach(t => t.stop());
+}
+
+function retakeCert() {
+  certImage = null;
+  document.getElementById("cert-preview-wrap").style.display = "none";
+  document.getElementById("cert-camera-wrap").style.display  = "block";
+  document.getElementById("cert-shutter").disabled = false;
+  startCertCamera();
+}
+
+function submitLeave() {
+  const dateStart = document.getElementById("date-start").value;
+  const dateEnd   = document.getElementById("date-end").value;
+  const note      = document.getElementById("note").value;
+
+  if (!dateStart || !dateEnd) {
+    setStatus("❌ กรุณาเลือกวันที่ลา", "error");
+    return;
+  }
+  if (!note.trim()) {
+    setStatus("❌ กรุณากรอกหมายเหตุ", "error");
+    return;
+  }
+
+  setStatus("⏳ กำลังส่งคำขอลา...", "loading");
+  document.getElementById("submit-btn").disabled = true;
+
+  const payload = JSON.stringify({
+    type:        "leave",
+    lineUserId:  lineUserId,
+    employeeName: employeeName,
+    leaveType:   leaveType,
+    leaveLabel:  leaveLabels[leaveType],
+    dateStart:   dateStart,
+    dateEnd:     dateEnd,
+    note:        note,
+    certImage:   certImage || null,
+    timestamp:   new Date().toISOString()
+  });
+
+  const iframe = document.createElement("iframe");
+  iframe.name  = "leave-iframe";
+  iframe.style.display = "none";
+  document.body.appendChild(iframe);
+
+  const form  = document.createElement("form");
+  form.method = "POST";
+  form.action = GAS_URL;
+  form.target = "leave-iframe";
+
+  const input  = document.createElement("input");
+  input.type   = "hidden";
+  input.name   = "data";
+  input.value  = payload;
+  form.appendChild(input);
+  document.body.appendChild(form);
+  form.submit();
+
+  setTimeout(() => {
+    setStatus(
+      `✅ ส่งคำขอ${leaveLabels[leaveType]}สำเร็จ!\nวันที่: ${dateStart} ถึง ${dateEnd}\nรอผู้บริหารอนุมัติ`,
+      "success"
+    );
+    document.body.removeChild(form);
+    document.body.removeChild(iframe);
+  }, 3000);
+}
+
+function setStatus(msg, type) {
+  const box = document.getElementById("status-box");
+  box.className = "status-box" + (type ? " " + type : "");
+  box.textContent = msg;
+}
+
+initLiff();
+</script>
+</body>
+</html>

@@ -201,7 +201,7 @@ async function initLiff() {
 async function startCertCamera() {
   try {
     certStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 960 } },
+      video: { facingMode: { ideal: "environment" }, width: { ideal: 800 }, height: { ideal: 600 } },
       audio: false
     });
     const video = document.getElementById("cert-video");
@@ -281,15 +281,13 @@ async function submitLeave() {
   });
 
   try {
-    const res = await fetch(GAS_URL, {
+    // ใช้ fetch แบบเรียบง่ายที่สุดสำหรับ GAS
+    await fetch(GAS_URL, {
       method: "POST",
-      mode: "no-cors", // Use no-cors to avoid CORS issues with GAS
-      headers: { "Content-Type": "text/plain" },
+      mode: "no-cors",
       body: payload
     });
     
-    // With no-cors, we can't read the response body. 
-    // We assume success if no error is thrown during fetch.
     setStatus(
       `✅ ส่งคำขอ${leaveLabels[leaveType]}สำเร็จ!\nวันที่: ${dateStart} ถึง ${dateEnd}\nรอผู้บริหารอนุมัติ`,
       "success"

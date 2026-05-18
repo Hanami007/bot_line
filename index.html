@@ -883,16 +883,6 @@
 </head>
 <body>
 
-  <!-- Popup กรอกเหตุผลสาย -->
-  <div class="popup-overlay" id="late-popup">
-    <div class="popup-box">
-      <div class="popup-title">⏰ เช็คอินสาย</div>
-      <div class="popup-sub" id="late-popup-sub">คุณเช็คอินหลังเวลา 09:00 น. กรุณาระบุเหตุผล</div>
-      <textarea class="popup-input" id="late-reason" placeholder="กรุณากรอกเหตุผลที่มาสาย..."></textarea>
-      <button class="popup-confirm" onclick="confirmLate()">✅ ยืนยันและส่งข้อมูล</button>
-    </div>
-  </div>
-
   <!-- Loading Screen -->
   <div id="loading-screen">
     <div class="load-logo">HR System</div>
@@ -1294,6 +1284,17 @@
       }, 3000);
     }
   </script>
+  
+  <!-- Popup กรอกเหตุผลสาย -->
+  <div class="popup-overlay" id="late-popup">
+    <div class="popup-box">
+      <div class="popup-title">⏰ เช็คอินสาย</div>
+      <div class="popup-sub" id="late-popup-sub">คุณเช็คอินหลังเวลา 09:00 น. กรุณาระบุเหตุผล</div>
+      <textarea class="popup-input" id="late-reason" placeholder="กรุณากรอกเหตุผลที่มาสาย..."></textarea>
+      <button class="popup-confirm" onclick="confirmLate()">✅ ยืนยันและส่งข้อมูล</button>
+    </div>
+  </div>
+
 </body>
 
 </html>

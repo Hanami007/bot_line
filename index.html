@@ -814,8 +814,82 @@
       background: var(--border);
       border-radius: 2px;
     }
+
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 50;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .popup-overlay.show {
+      display: flex;
+    }
+
+    .popup-box {
+      background: white;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 20px 20px 0 0;
+      padding: 24px 20px;
+    }
+
+    .popup-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #E24B4A;
+    }
+
+    .popup-sub {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-bottom: 16px;
+    }
+
+    .popup-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Sarabun', sans-serif;
+      resize: none;
+      height: 80px;
+      margin-bottom: 12px;
+    }
+
+    .popup-input:focus {
+      outline: none;
+      border-color: #E24B4A;
+    }
+
+    .popup-confirm {
+      width: 100%;
+      padding: 14px;
+      background: #E24B4A;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Sarabun', sans-serif;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
   </style>
 </head>
+<!-- Popup กรอกเหตุผลสาย -->
+<div class="popup-overlay" id="late-popup">
+  <div class="popup-box">
+    <div class="popup-title">⏰ เช็คอินสาย</div>
+    <div class="popup-sub" id="late-popup-sub">คุณเช็คอินหลังเวลา 09:00 น. กรุณาระบุเหตุผล</div>
+    <textarea class="popup-input" id="late-reason" placeholder="กรุณากรอกเหตุผลที่มาสาย..."></textarea>
+    <button class="popup-confirm" onclick="confirmLate()">✅ ยืนยันและส่งข้อมูล</button>
+  </div>
+</div>
 
 <body>
 
@@ -947,7 +1021,7 @@
 
   <script>
     // ===== CONFIG =====
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxfMhlTF-61y27ydikjGpKQX2RZj-wfqLzAron8zBIsGxS_B4d1HTNRy_mrS5DBotfW/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwZTs-CwRYcJ-KxLZytJsHgKmjddO5YVRNkvyHuIqqI4jO5V1V_tAIZ8DyzTfO0IYq1/exec";
     const LIFF_ID = "2010074074-oOwr1JIe";
 
     // ===== STATE =====
@@ -1106,6 +1180,14 @@
     // ===== SUBMIT =====
     async function submitAttendance() {
       if (!capturedImage) return;
+      if (isLate()) {
+        document.getElementById("late-popup-sub").textContent =
+          `คุณเช็คอินหลังเวลา ${LATE_TIME} น. กรุณาระบุเหตุผล`;
+        document.getElementById("late-popup").classList.add("show");
+        return;
+      }
+      // ไม่สาย — ส่งได้เลย
+      sendData("");
 
       setStatus("⏳ กำลังส่งข้อมูล...", "loading");
       document.getElementById("submit-btn").disabled = true;
@@ -1147,6 +1229,70 @@
 
     // ===== START =====
     initLiff();
+
+    // เพิ่มตัวแปร
+    const LATE_TIME = "09:00"; // ต้องตรงกับ GAS CONFIG.LATE_TIME
+
+    function isLate() {
+      if (selectedRound !== 1) return false;
+      const now = new Date();
+      const [h, m] = LATE_TIME.split(":").map(Number);
+      const lateMinutes = h * 60 + m;
+      const nowMinutes = now.getHours() * 60 + now.getMinutes();
+      return nowMinutes > lateMinutes;
+    }
+
+    function confirmLate() {
+      const reason = document.getElementById("late-reason").value.trim();
+      if (!reason) {
+        alert("กรุณากรอกเหตุผลที่มาสายก่อนครับ");
+        return;
+      }
+      document.getElementById("late-popup").classList.remove("show");
+      sendData(reason);
+    }
+
+    function sendData(lateReason) {
+      setStatus("⏳ กำลังส่งข้อมูล...", "loading");
+      document.getElementById("submit-btn").disabled = true;
+
+      const payload = JSON.stringify({
+        lineUserId: lineUserId,
+        employeeName: employeeName,
+        round: selectedRound,
+        imageBase64: capturedImage,
+        timestamp: new Date().toISOString(),
+        lateReason: lateReason  // ✅ ส่งเหตุผลไปด้วย
+      });
+
+      const iframe = document.createElement("iframe");
+      iframe.name = "hidden-iframe";
+      iframe.style.display = "none";
+      document.body.appendChild(iframe);
+
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = GAS_URL;
+      form.target = "hidden-iframe";
+
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "data";
+      input.value = payload;
+      form.appendChild(input);
+      document.body.appendChild(form);
+      form.submit();
+
+      setTimeout(function () {
+        setStatus(
+          "✅ ลงเวลา" + roundLabels[selectedRound] + "สำเร็จ!\n" +
+          "เวลา: " + new Date().toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" }),
+          "success"
+        );
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+      }, 3000);
+    }
   </script>
 </body>
 

@@ -1,273 +1,839 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ออกใบเตือน</title>
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
-  :root {
-    --primary: #06C755; --primary-dark: #04A344;
-    --bg: #F0F2F5; --card: #FFFFFF;
-    --text: #1A1A2E; --text-sub: #6B7280; --border: #E5E7EB;
-    --warn1: #F5A623; --warn2: #E24B4A; --warn3: #1A1A2E;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>ออกใบเตือน</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0A1628;
+      --navy-mid: #122040;
+      --navy-soft: #1B3060;
+      --gold: #C9A84C;
+      --gold-lt: #E2C47A;
+      --gold-dim: rgba(201, 168, 76, 0.18);
+      --white: #FFFFFF;
+      --muted: #8B9AB5;
+      --border: rgba(255, 255, 255, 0.08);
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --success: #22C55E;
+      --warn1: #F59E0B;
+      --warn2: #EF4444;
+      --warn3: #A855F7;
+    }
 
-  .header { width: 100%; background: var(--card); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; }
-  .header-icon { width: 38px; height: 38px; border-radius: 50%; background: #FFF3E0; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-  .header-name { font-size: 15px; font-weight: 600; }
-  .header-sub { font-size: 12px; color: var(--text-sub); }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  .main { max-width: 480px; margin: 0 auto; padding: 16px; }
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
 
-  /* ระดับความรุนแรง */
-  .section-label { font-size: 12px; font-weight: 600; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
-  .level-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
-  .level-btn { border: 2px solid var(--border); background: var(--card); border-radius: 12px; padding: 12px 6px; cursor: pointer; text-align: center; transition: all .15s; }
-  .level-btn:active { transform: scale(0.97); }
-  .level-btn .lv-icon { font-size: 22px; margin-bottom: 4px; }
-  .level-btn .lv-name { font-size: 12px; font-weight: 600; }
-  .level-btn[data-level="1"] { color: var(--warn1); }
-  .level-btn[data-level="2"] { color: var(--warn2); }
-  .level-btn[data-level="3"] { color: var(--warn3); }
-  .level-btn.selected { border-color: currentColor; background: color-mix(in srgb, currentColor 8%, white); }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201, 168, 76, 0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 60% at -10% 60%, rgba(27, 48, 96, 0.8) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 70% at 110% 30%, rgba(18, 32, 64, 0.9) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-  .card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 16px; margin-bottom: 16px; }
-  .form-group { margin-bottom: 14px; }
-  .form-group:last-child { margin-bottom: 0; }
-  .form-label { font-size: 13px; font-weight: 600; color: var(--text-sub); margin-bottom: 6px; display: block; }
-  .form-input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; font-family: 'Sarabun', sans-serif; color: var(--text); background: var(--bg); appearance: none; }
-  .form-input:focus { outline: none; border-color: var(--primary); }
-  textarea.form-input { resize: none; height: 90px; }
+    body>* {
+      position: relative;
+      z-index: 1;
+    }
 
-  /* Preview ใบเตือน */
-  .preview-card { display: none; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 16px; }
-  .preview-card.show { display: block; }
-  .preview-header { padding: 14px 16px; color: white; font-weight: 700; font-size: 15px; }
-  .preview-body { background: white; padding: 16px; }
-  .preview-row { display: flex; gap: 8px; margin-bottom: 8px; font-size: 13px; }
-  .preview-row-label { color: var(--text-sub); min-width: 52px; }
-  .preview-ref { font-size: 11px; color: #B4B2A9; margin-top: 12px; }
+    /* ── Loading ── */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      z-index: 200;
+      transition: opacity 0.5s ease;
+    }
 
-  .submit-btn { width: 100%; padding: 16px; background: var(--primary); color: white; font-size: 16px; font-weight: 600; font-family: 'Sarabun', sans-serif; border: none; border-radius: 14px; cursor: pointer; transition: all .15s; }
-  .submit-btn:active { background: var(--primary-dark); transform: scale(0.98); }
-  .submit-btn:disabled { background: var(--border); color: var(--text-sub); cursor: default; }
+    #loading-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-  .status-box { display: none; margin-top: 12px; padding: 14px 16px; border-radius: 12px; font-size: 14px; font-weight: 500; text-align: center; white-space: pre-line; }
-  .status-box.success { background: #E8F5E9; color: #1B5E20; display: block; }
-  .status-box.error   { background: #FFEBEE; color: #B71C1C; display: block; }
-  .status-box.loading { background: #E3F2FD; color: #0D47A1; display: block; }
+    .load-logo {
+      font-family: 'Prompt', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
 
-  #loading-screen { position: fixed; inset: 0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 100; }
-  .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-</style>
+    .load-ring {
+      width: 44px;
+      height: 44px;
+      border: 2px solid var(--gold-dim);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .load-text {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── Header ── */
+    .header {
+      width: 100%;
+      background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy-soft) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px 18px;
+      padding-top: max(16px, env(safe-area-inset-top, 16px));
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 20px;
+      right: 20px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    }
+
+    .header-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1.5px solid rgba(245, 158, 11, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .header-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .header-name {
+      font-family: 'Prompt', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .header-sub {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      margin-top: 1px;
+    }
+
+    .back-link {
+      font-size: 12px;
+      font-family: 'Prompt', sans-serif;
+      color: var(--gold);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(201, 168, 76, 0.3);
+      background: var(--gold-dim);
+      transition: all 0.2s;
+      flex-shrink: 0;
+      letter-spacing: 0.03em;
+    }
+
+    .back-link:active {
+      background: rgba(201, 168, 76, 0.25);
+    }
+
+    /* ── Main ── */
+    .main {
+      width: 100%;
+      max-width: 480px;
+      padding: 20px 16px 32px;
+    }
+
+    /* ── Section Label ── */
+    .section-label {
+      font-family: 'Prompt', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold-dim), transparent);
+    }
+
+    /* ── Level Grid ── */
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .level-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 8px 12px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-align: center;
+      color: var(--white);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .level-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      border-radius: 14px 14px 0 0;
+      background: var(--accent-color, transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .level-btn:active {
+      transform: scale(0.96);
+    }
+
+    .level-btn[data-level="1"] {
+      --accent-color: var(--warn1);
+    }
+
+    .level-btn[data-level="2"] {
+      --accent-color: var(--warn2);
+    }
+
+    .level-btn[data-level="3"] {
+      --accent-color: var(--warn3);
+    }
+
+    .level-btn.selected {
+      border-color: var(--accent-color);
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--accent-color) inset;
+    }
+
+    .level-btn.selected::before {
+      opacity: 1;
+    }
+
+    .level-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      box-shadow: 0 0 8px var(--accent-color);
+      margin: 0 auto 8px;
+    }
+
+    .level-btn.selected .level-dot {
+      animation: pulse-dot 1.8s ease infinite;
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        box-shadow: 0 0 8px var(--accent-color);
+      }
+
+      50% {
+        box-shadow: 0 0 16px var(--accent-color), 0 0 24px var(--accent-color);
+      }
+    }
+
+    .lv-icon {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .lv-name {
+      font-family: 'Prompt', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .level-btn.selected .lv-name {
+      color: var(--accent-color);
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ── Form ── */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-label {
+      font-family: 'Prompt', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: 'Sarabun', sans-serif;
+      color: var(--white);
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      color-scheme: dark;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: rgba(201, 168, 76, 0.5);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .form-input option {
+      background: var(--navy-mid);
+      color: var(--white);
+    }
+
+    textarea.form-input {
+      resize: none;
+      height: 100px;
+    }
+
+    /* ── Preview Card ── */
+    .preview-card {
+      display: none;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .preview-card.show {
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .preview-header {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .preview-header::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+    }
+
+    .preview-header-icon {
+      font-size: 20px;
+    }
+
+    .preview-header-text {
+      font-family: 'Prompt', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 0.02em;
+    }
+
+    .preview-header-badge {
+      margin-left: auto;
+      font-size: 10px;
+      font-family: 'Prompt', sans-serif;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.15);
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+    }
+
+    .preview-body {
+      background: rgba(255, 255, 255, 0.04);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 16px 18px;
+    }
+
+    .preview-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      align-items: flex-start;
+    }
+
+    .preview-row:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .preview-row-label {
+      color: var(--muted);
+      min-width: 48px;
+      font-size: 12px;
+      padding-top: 1px;
+    }
+
+    .preview-row-value {
+      color: var(--white);
+      flex: 1;
+      line-height: 1.5;
+    }
+
+    .preview-ref {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ── Submit ── */
+    .submit-btn {
+      width: 100%;
+      padding: 17px;
+      background: linear-gradient(135deg, #1B3060 0%, var(--navy-soft) 50%, #1B3060 100%);
+      color: var(--gold-lt);
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Prompt', sans-serif;
+      border: 1px solid rgba(201, 168, 76, 0.4);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.02em;
+      box-shadow: 0 4px 24px rgba(201, 168, 76, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.08), transparent);
+      transition: left 0.4s;
+    }
+
+    .submit-btn:not(:disabled):hover::before {
+      left: 100%;
+    }
+
+    .submit-btn:not(:disabled):active {
+      transform: scale(0.99);
+      border-color: var(--gold);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    /* ── Status ── */
+    .status-box {
+      display: none;
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    .status-box.success {
+      display: block;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86EFAC;
+    }
+
+    .status-box.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #FCA5A5;
+    }
+
+    .status-box.loading {
+      display: block;
+      background: rgba(96, 165, 250, 0.1);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      color: #BAE6FD;
+    }
+
+    /* ── Fade-in ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.4s ease forwards;
+    }
+
+    .fade-in:nth-child(1) {
+      animation-delay: 0.05s;
+    }
+
+    .fade-in:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    .fade-in:nth-child(3) {
+      animation-delay: 0.15s;
+    }
+
+    .fade-in:nth-child(4) {
+      animation-delay: 0.2s;
+    }
+
+    .fade-in:nth-child(5) {
+      animation-delay: 0.25s;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+  </style>
 </head>
+
 <body>
 
-<div id="loading-screen">
-  <div style="font-size:32px">⚠️</div>
-  <div class="spinner"></div>
-  <p style="font-size:14px;color:#6B7280">กำลังโหลด...</p>
-</div>
-
-<div class="header">
-  <div class="header-icon">⚠️</div>
-  <div>
-    <div class="header-name">ออกใบเตือนพนักงาน</div>
-    <div class="header-sub" id="header-sub">กำลังโหลด...</div>
-  </div>
-</div>
-
-<div class="main">
-
-  <!-- ระดับความรุนแรง -->
-  <div class="section-label">ระดับความรุนแรง</div>
-  <div class="level-grid">
-    <button class="level-btn selected" data-level="1" onclick="selectLevel(1)">
-      <div class="lv-icon">⚠️</div>
-      <div class="lv-name">เตือน</div>
-    </button>
-    <button class="level-btn" data-level="2" onclick="selectLevel(2)">
-      <div class="lv-icon">💸</div>
-      <div class="lv-name">ตัดเงิน</div>
-    </button>
-    <button class="level-btn" data-level="3" onclick="selectLevel(3)">
-      <div class="lv-icon">🚨</div>
-      <div class="lv-name">ไล่ออก</div>
-    </button>
+  <!-- Loading -->
+  <div id="loading-screen">
+    <div class="load-logo">HR System</div>
+    <div class="load-ring"></div>
+    <div class="load-text">กำลังโหลดข้อมูลพนักงาน...</div>
   </div>
 
-  <!-- ฟอร์ม -->
-  <div class="card">
-    <div class="form-group">
-      <label class="form-label">พนักงาน</label>
-      <select class="form-input" id="emp-select" onchange="updatePreview()">
-        <option value="">— เลือกพนักงาน —</option>
-      </select>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-icon">⚠️</div>
+    <div class="header-info">
+      <div class="header-name">ออกใบเตือนพนักงาน</div>
+      <div class="header-sub" id="header-sub">Warning Management</div>
     </div>
-    <div class="form-group">
-      <label class="form-label">เรื่องที่เตือน</label>
-      <textarea class="form-input" id="reason" placeholder="ระบุเหตุผลหรือพฤติกรรมที่ต้องการเตือน..." oninput="updatePreview()"></textarea>
-    </div>
+    <a href="index.html" class="back-link">← ลงเวลา</a>
   </div>
 
-  <!-- Preview -->
-  <div class="preview-card" id="preview-card">
-    <div class="preview-header" id="preview-header"></div>
-    <div class="preview-body">
-      <div class="preview-row">
-        <span class="preview-row-label">พนักงาน</span>
-        <span id="preview-name">—</span>
-      </div>
-      <div class="preview-row">
-        <span class="preview-row-label">วันที่</span>
-        <span id="preview-date">—</span>
-      </div>
-      <div class="preview-row" style="align-items:flex-start">
-        <span class="preview-row-label">เรื่อง</span>
-        <span id="preview-reason" style="flex:1">—</span>
-      </div>
-      <div class="preview-ref" id="preview-ref"></div>
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Level -->
+    <div class="section-label fade-in">ระดับความรุนแรง</div>
+    <div class="level-grid fade-in">
+      <button class="level-btn selected" data-level="1" onclick="selectLevel(1)">
+        <div class="level-dot"></div>
+        <div class="lv-icon">⚠️</div>
+        <div class="lv-name">เตือน</div>
+      </button>
+      <button class="level-btn" data-level="2" onclick="selectLevel(2)">
+        <div class="level-dot"></div>
+        <div class="lv-icon">💸</div>
+        <div class="lv-name">ตัดเงิน</div>
+      </button>
+      <button class="level-btn" data-level="3" onclick="selectLevel(3)">
+        <div class="level-dot"></div>
+        <div class="lv-icon">🚨</div>
+        <div class="lv-name">ไล่ออก</div>
+      </button>
     </div>
+
+    <!-- Form Card -->
+    <div class="card fade-in">
+      <div class="form-group">
+        <label class="form-label">พนักงาน</label>
+        <select class="form-input" id="emp-select" onchange="updatePreview()">
+          <option value="">— เลือกพนักงาน —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">เรื่องที่เตือน</label>
+        <textarea class="form-input" id="reason" placeholder="ระบุเหตุผลหรือพฤติกรรมที่ต้องการเตือน..."
+          oninput="updatePreview()"></textarea>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-card" id="preview-card">
+      <div class="preview-header" id="preview-header">
+        <span class="preview-header-icon" id="preview-icon"></span>
+        <span class="preview-header-text" id="preview-title"></span>
+        <span class="preview-header-badge">ตัวอย่าง</span>
+      </div>
+      <div class="preview-body">
+        <div class="preview-row">
+          <span class="preview-row-label">พนักงาน</span>
+          <span class="preview-row-value" id="preview-name">—</span>
+        </div>
+        <div class="preview-row">
+          <span class="preview-row-label">วันที่</span>
+          <span class="preview-row-value" id="preview-date">—</span>
+        </div>
+        <div class="preview-row">
+          <span class="preview-row-label">เรื่อง</span>
+          <span class="preview-row-value" id="preview-reason">—</span>
+        </div>
+        <div class="preview-ref" id="preview-ref">Draft · ยังไม่ได้ส่ง</div>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <button class="submit-btn fade-in" id="submit-btn" onclick="submitWarning()" disabled>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+      </svg>
+      ส่งใบเตือน
+    </button>
+
+    <div class="status-box" id="status-box"></div>
   </div>
 
-  <button class="submit-btn" id="submit-btn" onclick="submitWarning()" disabled>
-    📨 ส่งใบเตือน
-  </button>
-  <div class="status-box" id="status-box"></div>
-</div>
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxfMhlTF-61y27ydikjGpKQX2RZj-wfqLzAron8zBIsGxS_B4d1HTNRy_mrS5DBotfW/exec";
+    const LIFF_ID = "2010074074-oOwr1JIe";
 
-<script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxfMhlTF-61y27ydikjGpKQX2RZj-wfqLzAron8zBIsGxS_B4d1HTNRy_mrS5DBotfW/exec";
-const LIFF_ID = "2010074074-oOwr1JIe";
+    let selectedLevel = 1;
+    let ownerName = "";
+    let ownerId = "";
 
-let selectedLevel = 1;
-let ownerName = "";
-let ownerId = "";
+    const levelConfig = {
+      1: { icon: "⚠️", title: "หนังสือเตือน", color: "#B45309", bg: "linear-gradient(135deg,#92400E,#B45309)", label: "เตือนด้วยวาจา" },
+      2: { icon: "💸", title: "หนังสือตัดเงิน", color: "#991B1B", bg: "linear-gradient(135deg,#7F1D1D,#B91C1C)", label: "ตัดเงิน" },
+      3: { icon: "🚨", title: "หนังสือเลิกจ้าง", color: "#6B21A8", bg: "linear-gradient(135deg,#581C87,#7C3AED)", label: "ไล่ออก" }
+    };
 
-const levelConfig = {
-  1: { label: "⚠️ หนังสือเตือน",    color: "#F5A623", labelText: "เตือนด้วยวาจา" },
-  2: { label: "💸 หนังสือตัดเงิน",   color: "#E24B4A", labelText: "ตัดเงิน" },
-  3: { label: "🚨 หนังสือเลิกจ้าง",  color: "#1A1A2E", labelText: "ไล่ออก" }
-};
-
-function selectLevel(level) {
-  selectedLevel = level;
-  document.querySelectorAll(".level-btn").forEach(b => b.classList.remove("selected"));
-  document.querySelector(`.level-btn[data-level="${level}"]`).classList.add("selected");
-  updatePreview();
-}
-
-function updatePreview() {
-  const empSelect = document.getElementById("emp-select");
-  const empName   = empSelect.options[empSelect.selectedIndex]?.text || "";
-  const reason    = document.getElementById("reason").value.trim();
-  const cfg       = levelConfig[selectedLevel];
-
-  const hasData = empSelect.value && reason;
-  document.getElementById("submit-btn").disabled = !hasData;
-
-  const preview = document.getElementById("preview-card");
-  if (!hasData) { preview.classList.remove("show"); return; }
-
-  preview.classList.add("show");
-  document.getElementById("preview-header").textContent = cfg.label;
-  document.getElementById("preview-header").style.background = cfg.color;
-  document.getElementById("preview-name").textContent   = empName;
-  document.getElementById("preview-date").textContent   = new Date().toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" });
-  document.getElementById("preview-reason").textContent = reason;
-  document.getElementById("preview-ref").textContent    = "ตัวอย่างก่อนส่ง";
-}
-
-async function loadEmployees() {
-  try {
-    const res  = await fetch(`${GAS_URL}?action=getEmployees`, { redirect: "follow" });
-    const data = await res.json();
-    const select = document.getElementById("emp-select");
-    if (data.employees && data.employees.length > 0) {
-      data.employees.forEach(emp => {
-        const opt = document.createElement("option");
-        opt.value = emp.userId;
-        opt.text  = emp.name;
-        select.appendChild(opt);
-      });
-      document.getElementById("header-sub").textContent = `พนักงาน ${data.employees.length} คน`;
-    } else {
-      document.getElementById("header-sub").textContent = "ไม่พบข้อมูลพนักงาน";
+    function selectLevel(level) {
+      selectedLevel = level;
+      document.querySelectorAll(".level-btn").forEach(b => b.classList.remove("selected"));
+      document.querySelector(`.level-btn[data-level="${level}"]`).classList.add("selected");
+      updatePreview();
     }
-  } catch (err) {
-    document.getElementById("header-sub").textContent = "โหลดข้อมูลไม่ได้";
-  }
-}
 
-async function submitWarning() {
-  const empSelect = document.getElementById("emp-select");
-  const empUserId = empSelect.value;
-  const empName   = empSelect.options[empSelect.selectedIndex].text;
-  const reason    = document.getElementById("reason").value.trim();
+    function updatePreview() {
+      const empSelect = document.getElementById("emp-select");
+      const empName = empSelect.options[empSelect.selectedIndex]?.text || "";
+      const reason = document.getElementById("reason").value.trim();
+      const hasData = empSelect.value && reason;
 
-  if (!empUserId || !reason) return;
+      document.getElementById("submit-btn").disabled = !hasData;
 
-  setStatus("⏳ กำลังส่งใบเตือน...", "loading");
-  document.getElementById("submit-btn").disabled = true;
+      const preview = document.getElementById("preview-card");
+      if (!hasData) { preview.classList.remove("show"); return; }
 
-  try {
-    const res = await fetch(GAS_URL, {
-      method:   "POST",
-      headers:  { "Content-Type": "text/plain" },
-      body:     JSON.stringify({
-        type:       "warning",
-        ownerId:    ownerId,
-        empUserId:  empUserId,
-        empName:    empName,
-        reason:     reason,
-        level:      selectedLevel,
-        levelLabel: levelConfig[selectedLevel].labelText,
-        timestamp:  new Date().toISOString()
-      }),
-      redirect: "follow"
-    });
-    const result = await res.json();
-    if (result.success) {
-      setStatus(`✅ ส่งใบเตือนให้ ${empName} แล้ว\nระดับ: ${levelConfig[selectedLevel].label}\nref: ${result.warningId}`, "success");
-      document.getElementById("preview-card").classList.remove("show");
-      document.getElementById("emp-select").value = "";
-      document.getElementById("reason").value = "";
-    } else {
-      throw new Error(result.error || "ไม่ทราบสาเหตุ");
+      const cfg = levelConfig[selectedLevel];
+      preview.classList.add("show");
+
+      document.getElementById("preview-header").style.background = cfg.bg;
+      document.getElementById("preview-icon").textContent = cfg.icon;
+      document.getElementById("preview-title").textContent = cfg.title;
+      document.getElementById("preview-name").textContent = empName;
+      document.getElementById("preview-date").textContent = new Date().toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" });
+      document.getElementById("preview-reason").textContent = reason;
+      document.getElementById("preview-ref").textContent = `Draft · ระดับ: ${cfg.label}`;
     }
-  } catch (err) {
-    setStatus("❌ เกิดข้อผิดพลาด: " + err.message, "error");
-    document.getElementById("submit-btn").disabled = false;
-  }
-}
 
-function setStatus(msg, type) {
-  const box = document.getElementById("status-box");
-  box.className = "status-box " + type;
-  box.textContent = msg;
-}
+    async function loadEmployees() {
+      try {
+        const res = await fetch(`${GAS_URL}?action=getEmployees`, { redirect: "follow" });
+        const data = await res.json();
+        const select = document.getElementById("emp-select");
+        if (data.employees?.length > 0) {
+          data.employees.forEach(emp => {
+            const opt = document.createElement("option");
+            opt.value = emp.userId;
+            opt.text = emp.name;
+            select.appendChild(opt);
+          });
+          document.getElementById("header-sub").textContent = `พนักงาน ${data.employees.length} คน · Warning Management`;
+        } else {
+          document.getElementById("header-sub").textContent = "ไม่พบข้อมูลพนักงาน";
+        }
+      } catch (err) {
+        document.getElementById("header-sub").textContent = "โหลดข้อมูลไม่ได้";
+      }
+    }
 
-async function initLiff() {
-  try {
-    await liff.init({ liffId: LIFF_ID });
-    if (!liff.isLoggedIn()) { liff.login(); return; }
-    const profile = await liff.getProfile();
-    ownerId   = profile.userId;
-    ownerName = profile.displayName;
-  } catch (err) {
-    ownerId   = "U_TEST_OWNER";
-    ownerName = "ทดสอบ";
-  }
-  await loadEmployees();
-  document.getElementById("loading-screen").style.display = "none";
-}
+    async function submitWarning() {
+      const empSelect = document.getElementById("emp-select");
+      const empUserId = empSelect.value;
+      const empName = empSelect.options[empSelect.selectedIndex].text;
+      const reason = document.getElementById("reason").value.trim();
 
-initLiff();
-</script>
+      if (!empUserId || !reason) return;
+
+      setStatus("⏳ กำลังส่งใบเตือน...", "loading");
+      document.getElementById("submit-btn").disabled = true;
+
+      try {
+        const res = await fetch(GAS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify({
+            type: "warning", ownerId, empUserId, empName, reason,
+            level: selectedLevel,
+            levelLabel: levelConfig[selectedLevel].label,
+            timestamp: new Date().toISOString()
+          }),
+          redirect: "follow"
+        });
+        const result = await res.json();
+        if (result.success) {
+          setStatus(
+            `✅ ส่งใบเตือนให้ ${empName} แล้ว\nระดับ: ${levelConfig[selectedLevel].icon} ${levelConfig[selectedLevel].title}\nRef: ${result.warningId}`,
+            "success"
+          );
+          document.getElementById("preview-card").classList.remove("show");
+          document.getElementById("emp-select").value = "";
+          document.getElementById("reason").value = "";
+        } else {
+          throw new Error(result.error || "ไม่ทราบสาเหตุ");
+        }
+      } catch (err) {
+        setStatus("❌ เกิดข้อผิดพลาด: " + err.message, "error");
+        document.getElementById("submit-btn").disabled = false;
+      }
+    }
+
+    function setStatus(msg, type) {
+      const box = document.getElementById("status-box");
+      box.className = "status-box " + type;
+      box.textContent = msg;
+    }
+
+    async function initLiff() {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) { liff.login(); return; }
+        const profile = await liff.getProfile();
+        ownerId = profile.userId;
+        ownerName = profile.displayName;
+      } catch (err) {
+        ownerId = "U_TEST_OWNER";
+        ownerName = "ทดสอบ";
+      }
+      await loadEmployees();
+      const ls = document.getElementById("loading-screen");
+      ls.classList.add("fade-out");
+      setTimeout(() => ls.style.display = "none", 500);
+    }
+
+    initLiff();
+  </script>
 </body>
+
 </html>

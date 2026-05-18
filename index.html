@@ -1,550 +1,1153 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="format-detection" content="telephone=no">
-<meta http-equiv="Permissions-Policy" content="camera=*">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ลงเวลาทำงาน</title>
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <meta http-equiv="Permissions-Policy" content="camera=*">
+  <title>ลงเวลาทำงาน</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0A1628;
+      --navy-mid: #122040;
+      --navy-soft: #1B3060;
+      --gold: #C9A84C;
+      --gold-lt: #E2C47A;
+      --gold-dim: rgba(201, 168, 76, 0.18);
+      --white: #FFFFFF;
+      --off-white: #F4F6FA;
+      --muted: #8B9AB5;
+      --border: rgba(255, 255, 255, 0.08);
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --glass: rgba(255, 255, 255, 0.07);
+      --success: #22C55E;
+      --danger: #EF4444;
+      --info: #60A5FA;
+      --r1: #22C55E;
+      --r2: #F59E0B;
+      --r3: #60A5FA;
+      --r4: #F87171;
+    }
 
-  :root {
-    --primary: #06C755;
-    --primary-dark: #04A344;
-    --danger: #E24B4A;
-    --warning: #BA7517;
-    --info: #185FA5;
-    --bg: #F0F2F5;
-    --card: #FFFFFF;
-    --text: #1A1A2E;
-    --text-sub: #6B7280;
-    --border: #E5E7EB;
-    --round1: #1D9E75;
-    --round2: #BA7517;
-    --round3: #185FA5;
-    --round4: #993C1D;
-  }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      scroll-behavior: smooth;
+    }
 
-  body {
-    font-family: 'Sarabun', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
 
-  /* ===== HEADER ===== */
-  .header {
-    width: 100%;
-    background: var(--card);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  .header-avatar {
-    width: 38px; height: 38px;
-    border-radius: 50%;
-    background: #E8F5E9;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; overflow: hidden;
-  }
-  .header-avatar img { width: 100%; height: 100%; object-fit: cover; }
-  .header-name { font-size: 15px; font-weight: 600; }
-  .header-sub { font-size: 12px; color: var(--text-sub); }
-  .header-time {
-    margin-left: auto;
-    font-size: 13px; font-weight: 500;
-    color: var(--text-sub);
-    text-align: right;
-  }
+    /* ── Background Atmosphere ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201, 168, 76, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 60% at -10% 60%, rgba(27, 48, 96, 0.8) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 70% at 110% 30%, rgba(18, 32, 64, 0.9) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-  /* ===== MAIN ===== */
-  .main { width: 100%; max-width: 480px; padding: 16px; flex: 1; }
+    body>* {
+      position: relative;
+      z-index: 1;
+    }
 
-  /* ===== ROUND SELECTOR ===== */
-  .section-label {
-    font-size: 12px; font-weight: 600;
-    color: var(--text-sub);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 8px;
-  }
-  .round-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-  .round-btn {
-    border: 2px solid var(--border);
-    background: var(--card);
-    border-radius: 12px;
-    padding: 12px;
-    cursor: pointer;
-    transition: all .15s;
-    text-align: left;
-  }
-  .round-btn:active { transform: scale(0.97); }
-  .round-btn.selected {
-    border-color: currentColor;
-    background: #F8FFFE;
-  }
-  .round-btn[data-round="1"] { color: var(--round1); }
-  .round-btn[data-round="2"] { color: var(--round2); }
-  .round-btn[data-round="3"] { color: var(--round3); }
-  .round-btn[data-round="4"] { color: var(--round4); }
-  .round-btn.selected { background: color-mix(in srgb, currentColor 8%, white); }
-  .round-icon { font-size: 20px; margin-bottom: 4px; }
-  .round-name { font-size: 14px; font-weight: 600; }
-  .round-time { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+    /* ── Loading Screen ── */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      z-index: 200;
+      transition: opacity 0.5s ease;
+    }
 
-  /* ===== CAMERA ===== */
-  .camera-card {
-    background: var(--card);
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    margin-bottom: 16px;
-  }
-  .camera-wrap {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 4/3;
-    background: #111;
-    overflow: hidden;
-  }
-  #video {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transform: scaleX(-1); /* mirror */
-    display: block;
-  }
-  #canvas { display: none; }
-  .camera-overlay {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    flex-direction: column; gap: 8px;
-    background: rgba(0,0,0,0.6);
-    color: white;
-  }
-  .camera-overlay.hidden { display: none; }
-  .overlay-icon { font-size: 48px; }
-  .overlay-text { font-size: 14px; opacity: 0.8; }
+    #loading-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-  /* preview */
-  #preview-wrap { display: none; position: relative; }
-  #preview { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
-  .preview-badge {
-    position: absolute; top: 10px; left: 10px;
-    background: rgba(0,0,0,0.6); color: white;
-    font-size: 11px; padding: 4px 10px;
-    border-radius: 20px; backdrop-filter: blur(4px);
-  }
-  .retake-btn {
-    position: absolute; top: 10px; right: 10px;
-    background: rgba(0,0,0,0.6); color: white;
-    font-size: 12px; padding: 6px 12px;
-    border-radius: 20px; border: none; cursor: pointer;
-    backdrop-filter: blur(4px);
-  }
+    .load-logo {
+      font-family: 'Prompt', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
 
-  /* shutter */
-  .camera-footer {
-    padding: 16px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .shutter-btn {
-    width: 64px; height: 64px;
-    border-radius: 50%;
-    background: var(--primary);
-    border: 4px solid white;
-    box-shadow: 0 0 0 2px var(--primary);
-    cursor: pointer;
-    transition: all .15s;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px;
-  }
-  .shutter-btn:active { transform: scale(0.92); }
-  .shutter-btn:disabled { background: var(--border); box-shadow: 0 0 0 2px var(--border); cursor: default; }
+    .load-ring {
+      width: 44px;
+      height: 44px;
+      border: 2px solid var(--gold-dim);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
 
-  /* ===== TIMESTAMP INFO ===== */
-  .info-row {
-    display: flex; gap: 8px; margin-bottom: 16px;
-  }
-  .info-chip {
-    flex: 1; background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px; padding: 10px 12px;
-    font-size: 12px; color: var(--text-sub);
-  }
-  .info-chip strong { display: block; font-size: 14px; color: var(--text); margin-bottom: 2px; }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
-  /* ===== SUBMIT ===== */
-  .submit-btn {
-    width: 100%; padding: 16px;
-    background: var(--primary);
-    color: white; font-size: 16px; font-weight: 600;
-    font-family: 'Sarabun', sans-serif;
-    border: none; border-radius: 14px;
-    cursor: pointer; transition: all .15s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .submit-btn:active { transform: scale(0.98); background: var(--primary-dark); }
-  .submit-btn:disabled { background: var(--border); color: var(--text-sub); cursor: default; }
+    .load-text {
+      font-size: 13px;
+      color: var(--muted);
+    }
 
-  /* ===== LEAVE BUTTON ===== */
-  .leave-btn {
-    width: 100%; padding: 14px;
-    background: var(--card);
-    color: var(--info); font-size: 15px; font-weight: 600;
-    font-family: 'Sarabun', sans-serif;
-    border: 2px solid var(--info); border-radius: 14px;
-    cursor: pointer; transition: all .15s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    margin-top: 16px;
-    text-decoration: none;
-  }
-  .leave-btn:active { transform: scale(0.98); background: #f0f7ff; }
+    /* ── Header ── */
+    .header {
+      width: 100%;
+      background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy-soft) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px 18px;
+      padding-top: max(16px, env(safe-area-inset-top, 16px));
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
 
-  /* ===== STATUS ===== */
-  .status-box {
-    display: none;
-    margin-top: 12px;
-    padding: 14px 16px;
-    border-radius: 12px;
-    font-size: 14px; font-weight: 500;
-    text-align: center;
-  }
-  .status-box.success { background: #E8F5E9; color: #1B5E20; display: block; }
-  .status-box.error   { background: #FFEBEE; color: #B71C1C; display: block; }
-  .status-box.loading { background: #E3F2FD; color: #0D47A1; display: block; }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 20px;
+      right: 20px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    }
 
-  /* ===== LOADING SCREEN ===== */
-  #loading-screen {
-    position: fixed; inset: 0;
-    background: white;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 12px; z-index: 100;
-  }
-  .spinner {
-    width: 40px; height: 40px;
-    border: 3px solid var(--border);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin .8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  #loading-screen p { font-size: 14px; color: var(--text-sub); }
-</style>
+    .header-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--gold-dim);
+      border: 1.5px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gold);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .header-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .header-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .header-name {
+      font-family: 'Prompt', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-sub {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      margin-top: 1px;
+    }
+
+    .header-clock {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .clock-time {
+      font-family: 'Prompt', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.02em;
+      line-height: 1;
+    }
+
+    .clock-day {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    /* ── Main ── */
+    .main {
+      width: 100%;
+      max-width: 480px;
+      padding: 20px 16px 32px;
+    }
+
+    /* ── Section Label ── */
+    .section-label {
+      font-family: 'Prompt', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold-dim), transparent);
+    }
+
+    /* ── Round Grid ── */
+    .round-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .round-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 14px 12px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-align: left;
+      color: var(--white);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .round-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      border-radius: 14px 14px 0 0;
+      background: var(--accent-color, transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .round-btn:active {
+      transform: scale(0.96);
+    }
+
+    .round-btn[data-round="1"] {
+      --accent-color: var(--r1);
+    }
+
+    .round-btn[data-round="2"] {
+      --accent-color: var(--r2);
+    }
+
+    .round-btn[data-round="3"] {
+      --accent-color: var(--r3);
+    }
+
+    .round-btn[data-round="4"] {
+      --accent-color: var(--r4);
+    }
+
+    .round-btn.selected {
+      border-color: var(--accent-color);
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--accent-color) inset;
+    }
+
+    .round-btn.selected::before {
+      opacity: 1;
+    }
+
+    .round-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      margin-bottom: 10px;
+      box-shadow: 0 0 8px var(--accent-color);
+    }
+
+    .round-btn.selected .round-dot {
+      animation: pulse-dot 1.8s ease infinite;
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        box-shadow: 0 0 8px var(--accent-color);
+      }
+
+      50% {
+        box-shadow: 0 0 16px var(--accent-color), 0 0 24px var(--accent-color);
+      }
+    }
+
+    .round-name {
+      font-family: 'Prompt', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+
+    .round-tag {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .round-btn.selected .round-tag {
+      color: var(--accent-color);
+    }
+
+    /* ── Info Strip ── */
+    .info-strip {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .info-chip {
+      flex: 1;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .info-chip-label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .info-chip-value {
+      font-family: 'Prompt', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    /* ── Camera Card ── */
+    .camera-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .camera-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: #070D1C;
+      overflow: hidden;
+    }
+
+    #video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+      display: block;
+    }
+
+    #canvas {
+      display: none;
+    }
+
+    /* corner guides */
+    .cam-guide {
+      position: absolute;
+      inset: 12px;
+      pointer-events: none;
+    }
+
+    .cam-guide::before,
+    .cam-guide::after,
+    .cam-guide span::before,
+    .cam-guide span::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-color: var(--gold);
+      border-style: solid;
+      opacity: 0.6;
+    }
+
+    .cam-guide::before {
+      top: 0;
+      left: 0;
+      border-width: 2px 0 0 2px;
+      border-radius: 3px 0 0 0;
+    }
+
+    .cam-guide::after {
+      top: 0;
+      right: 0;
+      border-width: 2px 2px 0 0;
+      border-radius: 0 3px 0 0;
+    }
+
+    .cam-guide span::before {
+      bottom: 0;
+      left: 0;
+      border-width: 0 0 2px 2px;
+      border-radius: 0 0 0 3px;
+    }
+
+    .cam-guide span::after {
+      bottom: 0;
+      right: 0;
+      border-width: 0 2px 2px 0;
+      border-radius: 0 0 3px 0;
+    }
+
+    .camera-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      background: rgba(7, 13, 28, 0.85);
+      backdrop-filter: blur(4px);
+      transition: opacity 0.3s;
+    }
+
+    .camera-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .overlay-icon-wrap {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--gold-dim);
+      border: 1px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .overlay-text {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* preview */
+    #preview-wrap {
+      display: none;
+      position: relative;
+    }
+
+    #preview {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+    }
+
+    .preview-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(10, 22, 40, 0.75);
+      color: var(--gold-lt);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(201, 168, 76, 0.3);
+      letter-spacing: 0.04em;
+    }
+
+    .retake-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(10, 22, 40, 0.75);
+      color: var(--white);
+      font-size: 12px;
+      font-family: 'Sarabun', sans-serif;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s;
+    }
+
+    .retake-btn:active {
+      background: rgba(201, 168, 76, 0.15);
+      color: var(--gold-lt);
+    }
+
+    /* capture flash */
+    .flash-overlay {
+      position: absolute;
+      inset: 0;
+      background: white;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.05s;
+    }
+
+    .flash-overlay.flash {
+      opacity: 0.7;
+    }
+
+    /* ── Camera Footer ── */
+    .camera-footer {
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      background: rgba(10, 22, 40, 0.6);
+      border-top: 1px solid var(--border);
+    }
+
+    .shutter-btn {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 100%);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 0 0 4px rgba(201, 168, 76, 0.15),
+        0 4px 20px rgba(201, 168, 76, 0.35);
+      position: relative;
+    }
+
+    .shutter-btn::after {
+      content: '';
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .shutter-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: var(--navy);
+    }
+
+    .shutter-btn:active {
+      transform: scale(0.92);
+      box-shadow: 0 0 0 6px rgba(201, 168, 76, 0.25);
+    }
+
+    .shutter-btn:disabled {
+      background: var(--navy-soft);
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .shutter-btn:disabled::after {
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ── Submit Button ── */
+    .submit-btn {
+      width: 100%;
+      padding: 17px;
+      background: linear-gradient(135deg, #1B3060 0%, var(--navy-soft) 50%, #1B3060 100%);
+      background-size: 200% 100%;
+      color: var(--gold-lt);
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Prompt', sans-serif;
+      border: 1px solid rgba(201, 168, 76, 0.4);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.02em;
+      box-shadow: 0 4px 24px rgba(201, 168, 76, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.08), transparent);
+      transition: left 0.4s;
+    }
+
+    .submit-btn:not(:disabled):hover::before {
+      left: 100%;
+    }
+
+    .submit-btn:not(:disabled):active {
+      transform: scale(0.99);
+      background-position: right center;
+      border-color: var(--gold);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    /* ── Secondary Buttons ── */
+    .secondary-btn {
+      width: 100%;
+      padding: 15px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'Prompt', sans-serif;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      margin-top: 10px;
+      letter-spacing: 0.02em;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .secondary-btn:active {
+      border-color: rgba(201, 168, 76, 0.4);
+      color: var(--gold-lt);
+      background: var(--gold-dim);
+    }
+
+    /* ── Status Box ── */
+    .status-box {
+      display: none;
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+
+    .status-box.success {
+      display: block;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86EFAC;
+    }
+
+    .status-box.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #FCA5A5;
+    }
+
+    .status-box.loading {
+      display: block;
+      background: rgba(96, 165, 250, 0.1);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      color: #BAE6FD;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0 10px;
+    }
+
+    .divider span {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Fade-in Animations ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.4s ease forwards;
+    }
+
+    .fade-in:nth-child(1) {
+      animation-delay: 0.05s;
+    }
+
+    .fade-in:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    .fade-in:nth-child(3) {
+      animation-delay: 0.15s;
+    }
+
+    .fade-in:nth-child(4) {
+      animation-delay: 0.2s;
+    }
+
+    .fade-in:nth-child(5) {
+      animation-delay: 0.25s;
+    }
+
+    .fade-in:nth-child(6) {
+      animation-delay: 0.3s;
+    }
+
+    .fade-in:nth-child(7) {
+      animation-delay: 0.35s;
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- Loading -->
-<div id="loading-screen">
-  <div style="font-size:32px">🕐</div>
-  <div class="spinner"></div>
-  <p>กำลังโหลด...</p>
-</div>
-
-<!-- Header -->
-<div class="header">
-  <div class="header-avatar">
-    <img id="profile-pic" src="" alt="" onerror="this.style.display='none'">
-    <span id="profile-initial" style="font-size:16px;font-weight:600;color:var(--primary)"></span>
-  </div>
-  <div>
-    <div class="header-name" id="profile-name">กำลังโหลด...</div>
-    <div class="header-sub">ระบบลงเวลาทำงาน</div>
-  </div>
-  <div class="header-time" id="clock"></div>
-</div>
-
-<!-- Main -->
-<div class="main">
-
-  <!-- Round Selector -->
-  <div class="section-label">เลือกรอบการลงเวลา</div>
-  <div class="round-grid">
-    <button class="round-btn selected" data-round="1" onclick="selectRound(1)">
-      <div class="round-icon">🌅</div>
-      <div class="round-name">เข้างาน</div>
-      <div class="round-time">รอบที่ 1</div>
-    </button>
-    <button class="round-btn" data-round="2" onclick="selectRound(2)">
-      <div class="round-icon">🍱</div>
-      <div class="round-name">พักเที่ยง</div>
-      <div class="round-time">รอบที่ 2</div>
-    </button>
-    <button class="round-btn" data-round="3" onclick="selectRound(3)">
-      <div class="round-icon">🔄</div>
-      <div class="round-name">กลับจากพัก</div>
-      <div class="round-time">รอบที่ 3</div>
-    </button>
-    <button class="round-btn" data-round="4" onclick="selectRound(4)">
-      <div class="round-icon">🌆</div>
-      <div class="round-name">เลิกงาน</div>
-      <div class="round-time">รอบที่ 4</div>
-    </button>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="load-logo">HR System</div>
+    <div class="load-ring"></div>
+    <div class="load-text">กำลังตรวจสอบตัวตน...</div>
   </div>
 
-  <!-- Info Row -->
-  <div class="info-row">
-    <div class="info-chip">
-      <strong id="display-date">-</strong>
-      วันที่
+  <!-- Header -->
+  <div class="header">
+    <div class="header-avatar">
+      <img id="profile-pic" src="" alt="" onerror="this.style.display='none'">
+      <span id="profile-initial"></span>
     </div>
-    <div class="info-chip">
-      <strong id="display-time">-</strong>
-      เวลาปัจจุบัน
+    <div class="header-info">
+      <div class="header-name" id="profile-name">กำลังโหลด...</div>
+      <div class="header-sub">ระบบลงเวลาทำงาน &nbsp;·&nbsp; Human Resources</div>
+    </div>
+    <div class="header-clock">
+      <div class="clock-time" id="clock-time">--:--</div>
+      <div class="clock-day" id="clock-day">---</div>
     </div>
   </div>
 
-  <!-- Camera -->
-  <div class="camera-card">
-    <div class="camera-wrap">
-      <video id="video" autoplay playsinline muted webkit-playsinline></video>
-      <canvas id="canvas"></canvas>
-      <div class="camera-overlay" id="cam-overlay">
-        <div class="overlay-icon">📷</div>
-        <div class="overlay-text">กำลังเปิดกล้อง...</div>
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Round Selector -->
+    <div class="section-label fade-in">รอบการลงเวลา</div>
+    <div class="round-grid fade-in">
+      <button class="round-btn selected" data-round="1" onclick="selectRound(1)">
+        <div class="round-dot"></div>
+        <div class="round-name">เข้างาน</div>
+        <div class="round-tag">รอบที่ 1</div>
+      </button>
+      <button class="round-btn" data-round="2" onclick="selectRound(2)">
+        <div class="round-dot"></div>
+        <div class="round-name">พักเที่ยง</div>
+        <div class="round-tag">รอบที่ 2</div>
+      </button>
+      <button class="round-btn" data-round="3" onclick="selectRound(3)">
+        <div class="round-dot"></div>
+        <div class="round-name">กลับจากพัก</div>
+        <div class="round-tag">รอบที่ 3</div>
+      </button>
+      <button class="round-btn" data-round="4" onclick="selectRound(4)">
+        <div class="round-dot"></div>
+        <div class="round-name">เลิกงาน</div>
+        <div class="round-tag">รอบที่ 4</div>
+      </button>
+    </div>
+
+    <!-- Info Strip -->
+    <div class="info-strip fade-in">
+      <div class="info-chip">
+        <div class="info-chip-label">วันที่</div>
+        <div class="info-chip-value" id="display-date">—</div>
       </div>
-      <div id="preview-wrap">
-        <img id="preview" alt="รูปที่ถ่าย">
-        <div class="preview-badge" id="preview-badge">รอบที่ 1 — เข้างาน</div>
-        <button class="retake-btn" onclick="retake()">🔄 ถ่ายใหม่</button>
+      <div class="info-chip">
+        <div class="info-chip-label">เวลา</div>
+        <div class="info-chip-value" id="display-time">—</div>
+      </div>
+      <div class="info-chip">
+        <div class="info-chip-label">สถานะ</div>
+        <div class="info-chip-value" id="display-status" style="color:var(--muted);font-size:11px">รอถ่ายรูป</div>
       </div>
     </div>
-    <div class="camera-footer">
-      <button class="shutter-btn" id="shutter-btn" onclick="capture()" title="ถ่ายรูป">📸</button>
+
+    <!-- Camera Card -->
+    <div class="camera-card fade-in">
+      <div class="camera-wrap">
+        <video id="video" autoplay playsinline muted webkit-playsinline></video>
+        <canvas id="canvas"></canvas>
+        <div class="cam-guide"><span></span></div>
+        <div class="flash-overlay" id="flash-overlay"></div>
+        <div class="camera-overlay" id="cam-overlay">
+          <div class="overlay-icon-wrap">📷</div>
+          <div class="overlay-text">กำลังเปิดกล้อง...</div>
+        </div>
+        <div id="preview-wrap">
+          <img id="preview" alt="รูปที่ถ่าย">
+          <div class="preview-badge" id="preview-badge">รอบที่ 1 — เข้างาน</div>
+          <button class="retake-btn" onclick="retake()">↩ ถ่ายใหม่</button>
+        </div>
+      </div>
+      <div class="camera-footer">
+        <button class="shutter-btn" id="shutter-btn" onclick="capture()" title="ถ่ายรูป">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.5-10h-2.08L16 4H8L6.08 5.5H4a2 2 0 0 0-2 2V19a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7.5a2 2 0 0 0-2-2Z" />
+          </svg>
+        </button>
+      </div>
     </div>
+
+    <!-- Submit -->
+    <button class="submit-btn fade-in" id="submit-btn" onclick="submitAttendance()" disabled>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+      </svg>
+      ยืนยันการลงเวลาเข้างาน
+    </button>
+
+    <!-- Status -->
+    <div class="status-box" id="status-box"></div>
+
+    <!-- Divider -->
+    <div class="divider fade-in"><span>บริการอื่นๆ</span></div>
+
+    <!-- Secondary Actions -->
+    <a href="leave.html" class="secondary-btn fade-in">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.6">
+        <path
+          d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 16H5V8h14z" />
+      </svg>
+      แจ้งลาหยุดงาน
+    </a>
+
+    <a href="warning.html" class="secondary-btn fade-in">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.6">
+        <path d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z" />
+      </svg>
+      แจ้งใบเตือน
+    </a>
+
   </div>
 
-  <!-- Submit -->
-  <button class="submit-btn" id="submit-btn" onclick="submitAttendance()" disabled>
-    ✅ ยืนยันการลงเวลาเข้างาน
-  </button>
+  <script>
+    // ===== CONFIG =====
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzDYCQnkpDbsh1vDvmeYIX2R_ZyFMOFoIE2xNMRm3u7IaYerIclzYykJMzxLIdw2kcG/exec";
+    const LIFF_ID = "2010074074-oOwr1JIe";
 
-  <!-- Status -->
-  <div class="status-box" id="status-box"></div>
+    // ===== STATE =====
+    let lineUserId = "";
+    let employeeName = "";
+    let selectedRound = 1;
+    let capturedImage = null;
+    let stream = null;
 
-  <!-- Leave Link -->
-  <a href="leave.html" class="leave-btn">
-    📅 แจ้งลาหยุดงาน
-  </a>
+    const roundLabels = ["", "เข้างาน", "พักเที่ยง", "กลับจากพัก", "เลิกงาน"];
 
-  <!-- Warning Link -->
-  <a href="warning.html" class="leave-btn">
-    ⚠️ แจ้งใบเตือน
-  </a>
+    // ===== CLOCK =====
+    function updateClock() {
+      const now = new Date();
+      const opts = { timeZone: "Asia/Bangkok" };
+      const hm = now.toLocaleTimeString("th-TH", { ...opts, hour: "2-digit", minute: "2-digit" });
+      const day = now.toLocaleDateString("th-TH", { ...opts, weekday: "long" });
+      const date = now.toLocaleDateString("th-TH", { ...opts, day: "numeric", month: "short", year: "numeric" });
+      const time = now.toLocaleTimeString("th-TH", { ...opts, hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
-</div>
-
-<script>
-// ===== CONFIG — แก้ค่านี้ =====
-const GAS_URL   = "https://script.google.com/macros/s/AKfycbzDYCQnkpDbsh1vDvmeYIX2R_ZyFMOFoIE2xNMRm3u7IaYerIclzYykJMzxLIdw2kcG/exec";  // URL จาก Deploy GAS
-const LIFF_ID   = "2010074074-oOwr1JIe";          // LIFF ID จาก LINE Developers
-
-// ===== STATE =====
-let lineUserId    = "";
-let employeeName  = "";
-let selectedRound = 1;
-let capturedImage = null;
-let stream        = null;
-
-const roundLabels = ["", "เข้างาน", "พักเที่ยง", "กลับจากพัก", "เลิกงาน"];
-
-// ===== CLOCK =====
-function updateClock() {
-  const now = new Date();
-  const opts = { timeZone: "Asia/Bangkok" };
-  document.getElementById("clock").innerHTML =
-    now.toLocaleTimeString("th-TH", { ...opts, hour: "2-digit", minute: "2-digit" }) + "<br>" +
-    now.toLocaleDateString("th-TH", { ...opts, weekday: "short" });
-  document.getElementById("display-date").textContent =
-    now.toLocaleDateString("th-TH", { ...opts, day: "numeric", month: "short", year: "numeric" });
-  document.getElementById("display-time").textContent =
-    now.toLocaleTimeString("th-TH", { ...opts, hour: "2-digit", minute: "2-digit", second: "2-digit" });
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-// ===== LIFF INIT =====
-async function initLiff() {
-  try {
-    await liff.init({ liffId: LIFF_ID });
-    if (!liff.isLoggedIn()) { liff.login(); return; }
-
-    const profile = await liff.getProfile();
-    lineUserId   = profile.userId;
-    employeeName = profile.displayName;
-
-    document.getElementById("profile-name").textContent = profile.displayName;
-    if (profile.pictureUrl) {
-      document.getElementById("profile-pic").src = profile.pictureUrl;
-    } else {
-      document.getElementById("profile-initial").textContent = profile.displayName.charAt(0);
+      document.getElementById("clock-time").textContent = hm;
+      document.getElementById("clock-day").textContent = day;
+      document.getElementById("display-date").textContent = date;
+      document.getElementById("display-time").textContent = time;
     }
-  } catch (err) {
-    // fallback สำหรับทดสอบนอก LINE
-    lineUserId   = "U_TEST_ID";
-    employeeName = "ทดสอบ";
-    document.getElementById("profile-name").textContent = "ทดสอบ (นอก LINE)";
-    console.warn("LIFF error:", err);
-  }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-  await startCamera();
-  document.getElementById("loading-screen").style.display = "none";
-}
+    // ===== LIFF =====
+    async function initLiff() {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) { liff.login(); return; }
 
-// ===== CAMERA =====
-async function startCamera() {
-  try {
-    // iOS ต้องการ constraints แบบนี้
-    const constraints = {
-      video: {
-        facingMode: { ideal: "user" },
-        width:  { ideal: 640 },
-        height: { ideal: 480 }
-      },
-      audio: false
-    };
+        const profile = await liff.getProfile();
+        lineUserId = profile.userId;
+        employeeName = profile.displayName;
 
-    stream = await navigator.mediaDevices.getUserMedia(constraints);
-    const video = document.getElementById("video");
-    video.srcObject = stream;
+        document.getElementById("profile-name").textContent = profile.displayName;
+        if (profile.pictureUrl) {
+          const img = document.getElementById("profile-pic");
+          img.src = profile.pictureUrl;
+          img.style.display = "block";
+          document.getElementById("profile-initial").textContent = "";
+        } else {
+          document.getElementById("profile-initial").textContent = profile.displayName.charAt(0);
+        }
+      } catch (err) {
+        lineUserId = "U_TEST_ID";
+        employeeName = "ทดสอบ";
+        document.getElementById("profile-name").textContent = "ทดสอบ (นอก LINE)";
+        document.getElementById("profile-initial").textContent = "ท";
+        console.warn("LIFF error:", err);
+      }
 
-    // iOS ต้องการ play() แบบ explicit
-    video.onloadedmetadata = function() {
-      video.play().catch(err => console.log("play error:", err));
-    };
+      await startCamera();
+      // Fade out loading screen
+      const ls = document.getElementById("loading-screen");
+      ls.classList.add("fade-out");
+      setTimeout(() => ls.style.display = "none", 500);
+    }
 
-    document.getElementById("cam-overlay").classList.add("hidden");
+    // ===== CAMERA =====
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "user" }, width: { ideal: 640 }, height: { ideal: 480 } },
+          audio: false
+        });
+        const video = document.getElementById("video");
+        video.srcObject = stream;
+        video.onloadedmetadata = () => video.play().catch(e => console.warn("play:", e));
+        document.getElementById("cam-overlay").classList.add("hidden");
+      } catch (err) {
+        const overlay = document.getElementById("cam-overlay");
+        overlay.querySelector(".overlay-icon-wrap").textContent = "⚠️";
+        overlay.querySelector(".overlay-text").textContent = "กรุณาอนุญาตการใช้กล้อง แล้วรีเฟรชหน้านี้";
+        overlay.classList.remove("hidden");
+        console.error("Camera:", err.name, err.message);
+      }
+    }
 
-  } catch (err) {
-    console.error("Camera error:", err.name, err.message);
-    const overlay = document.getElementById("cam-overlay");
-    overlay.querySelector(".overlay-icon").textContent = "⚠️";
-    overlay.querySelector(".overlay-text").textContent =
-      "กรุณาอนุญาตการใช้กล้อง\nแล้วรีเฟรชหน้านี้";
-    overlay.classList.remove("hidden");
-  }
-}
+    // ===== ROUND SELECT =====
+    function selectRound(round) {
+      selectedRound = round;
+      document.querySelectorAll(".round-btn").forEach(b => b.classList.remove("selected"));
+      document.querySelector(`.round-btn[data-round="${round}"]`).classList.add("selected");
 
-// ===== ROUND SELECT =====
-function selectRound(round) {
-  selectedRound = round;
-  document.querySelectorAll(".round-btn").forEach(b => b.classList.remove("selected"));
-  document.querySelector(`.round-btn[data-round="${round}"]`).classList.add("selected");
-  retake();
-}
+      // Update submit label
+      document.getElementById("submit-btn").innerHTML = `
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+    </svg>
+    ยืนยันการลงเวลา${roundLabels[round]}
+  `;
 
-// ===== CAPTURE =====
-function capture() {
-  const video  = document.getElementById("video");
-  const canvas = document.getElementById("canvas");
-  canvas.width  = video.videoWidth  || 640;
-  canvas.height = video.videoHeight || 480;
-  const ctx = canvas.getContext("2d");
-  ctx.translate(canvas.width, 0);
-  ctx.scale(-1, 1);
-  ctx.drawImage(video, 0, 0);
+      retake();
+    }
 
-  // Timestamp บนรูป
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.fillStyle = "rgba(0,0,0,0.5)";
-  ctx.fillRect(0, canvas.height - 36, canvas.width, 36);
-  ctx.fillStyle = "white";
-  ctx.font = "13px Sarabun, sans-serif";
-  const now = new Date();
-  const timeLabel = now.toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
-  ctx.fillText(`${employeeName}  |  ${timeLabel}  |  รอบ ${selectedRound}: ${roundLabels[selectedRound]}`, 10, canvas.height - 12);
+    // ===== CAPTURE =====
+    function capture() {
+      const video = document.getElementById("video");
+      const canvas = document.getElementById("canvas");
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
 
-  // compress เป็น JPEG quality 0.7
-  capturedImage = canvas.toDataURL("image/jpeg", 0.7).split(",")[1];
+      // Flash
+      const flash = document.getElementById("flash-overlay");
+      flash.classList.add("flash");
+      setTimeout(() => flash.classList.remove("flash"), 150);
 
-  // แสดง preview
-  document.getElementById("preview").src = canvas.toDataURL("image/jpeg", 0.7);
-  document.getElementById("preview-badge").textContent = `รอบที่ ${selectedRound} — ${roundLabels[selectedRound]}`;
-  document.getElementById("preview-wrap").style.display = "block";
-  document.getElementById("video").style.display = "none";
-  document.getElementById("shutter-btn").disabled = true;
-  document.getElementById("submit-btn").disabled = false;
+      const ctx = canvas.getContext("2d");
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-  if (stream) stream.getTracks().forEach(t => t.stop());
-}
+      // Timestamp overlay
+      const barH = 40;
+      ctx.fillStyle = "rgba(10,22,40,0.75)";
+      ctx.fillRect(0, canvas.height - barH, canvas.width, barH);
+      ctx.fillStyle = "rgba(201,168,76,0.9)";
+      ctx.font = "bold 12px Sarabun, sans-serif";
+      const now = new Date();
+      const label = `${employeeName}  ·  ${now.toLocaleString("th-TH", { timeZone: "Asia/Bangkok" })}  ·  รอบ ${selectedRound}: ${roundLabels[selectedRound]}`;
+      ctx.fillText(label, 10, canvas.height - barH / 2 + 5);
 
-// ===== RETAKE =====
-function retake() {
-  capturedImage = null;
-  document.getElementById("preview-wrap").style.display = "none";
-  document.getElementById("video").style.display = "block";
-  document.getElementById("shutter-btn").disabled = false;
-  document.getElementById("submit-btn").disabled = true;
-  setStatus("", "");
-  startCamera();
-}
+      capturedImage = canvas.toDataURL("image/jpeg", 0.75).split(",")[1];
 
-// ===== SUBMIT =====
-async function submitAttendance() {
-  if (!capturedImage) {
-    return;
-  }
+      // Show preview
+      document.getElementById("preview").src = canvas.toDataURL("image/jpeg", 0.75);
+      document.getElementById("preview-badge").textContent = `รอบที่ ${selectedRound} — ${roundLabels[selectedRound]}`;
+      document.getElementById("preview-wrap").style.display = "block";
+      document.getElementById("video").style.display = "none";
+      document.getElementById("shutter-btn").disabled = true;
+      document.getElementById("submit-btn").disabled = false;
+      document.getElementById("display-status").textContent = "พร้อมส่ง";
+      document.getElementById("display-status").style.color = "var(--success)";
 
-  setStatus("⏳ กำลังส่งข้อมูล...", "loading");
-  document.getElementById("submit-btn").disabled = true;
+      if (stream) stream.getTracks().forEach(t => t.stop());
+    }
 
-  const payload = {
-    lineUserId:   lineUserId,
-    employeeName: employeeName,
-    round:        selectedRound,
-    imageBase64:  capturedImage,
-    timestamp:    new Date().toISOString()
-  };
+    // ===== RETAKE =====
+    function retake() {
+      capturedImage = null;
+      document.getElementById("preview-wrap").style.display = "none";
+      document.getElementById("video").style.display = "block";
+      document.getElementById("shutter-btn").disabled = false;
+      document.getElementById("submit-btn").disabled = true;
+      document.getElementById("display-status").textContent = "รอถ่ายรูป";
+      document.getElementById("display-status").style.color = "var(--muted)";
+      setStatus("", "");
+      startCamera();
+    }
 
-  try {
-    await fetch(GAS_URL, {
-      method:  "POST",
-      mode:    "no-cors",
-      headers: { "Content-Type": "text/plain" },
-      body:    JSON.stringify(payload)
-    });
+    // ===== SUBMIT =====
+    async function submitAttendance() {
+      if (!capturedImage) return;
 
-    // no-cors ไม่คืน response — ถือว่าสำเร็จถ้าไม่ throw
-    setStatus(
-      `✅ ลงเวลา${roundLabels[selectedRound]}สำเร็จ!\n` +
-      `เวลา: ${new Date().toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" })}`,
-      "success"
-    );
+      setStatus("⏳ กำลังส่งข้อมูล...", "loading");
+      document.getElementById("submit-btn").disabled = true;
 
-  } catch (err) {
-    console.error("Submit error:", err);
-    setStatus("❌ ส่งข้อมูลไม่สำเร็จ: " + err.message, "error");
-    document.getElementById("submit-btn").disabled = false;
-  }
-}
+      const payload = {
+        lineUserId,
+        employeeName,
+        round: selectedRound,
+        imageBase64: capturedImage,
+        timestamp: new Date().toISOString()
+      };
 
-function setStatus(msg, type) {
-  const box = document.getElementById("status-box");
-  box.className = "status-box" + (type ? " " + type : "");
-  box.textContent = msg;
-  box.style.whiteSpace = "pre-line";
-}
+      try {
+        await fetch(GAS_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify(payload)
+        });
 
-// ===== START =====
-initLiff();
-</script>
+        document.getElementById("display-status").textContent = "สำเร็จ ✓";
+        document.getElementById("display-status").style.color = "var(--success)";
+        setStatus(
+          `✅ ลงเวลา${roundLabels[selectedRound]}สำเร็จ\nเวลา: ${new Date().toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" })}`,
+          "success"
+        );
+      } catch (err) {
+        console.error("Submit:", err);
+        setStatus("❌ ส่งข้อมูลไม่สำเร็จ: " + err.message, "error");
+        document.getElementById("submit-btn").disabled = false;
+      }
+    }
+
+    function setStatus(msg, type) {
+      const box = document.getElementById("status-box");
+      box.className = "status-box" + (type ? " " + type : "");
+      box.textContent = msg;
+    }
+
+    // ===== START =====
+    initLiff();
+  </script>
 </body>
+
 </html>

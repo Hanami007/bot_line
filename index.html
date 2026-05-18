@@ -1201,7 +1201,10 @@
           headers: {
             'Content-Type': 'text/plain;charset=utf-8',
           }
-        });
+        })
+          .then(res => res.json())
+          .then(result => console.log(result))
+          .catch(err => console.error(err));
 
         document.getElementById("display-status").textContent = "สำเร็จ ✓";
         document.getElementById("display-status").style.color = "var(--success)";

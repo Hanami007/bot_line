@@ -1194,8 +1194,12 @@
         await fetch(GAS_URL, {
           method: "POST",
           mode: "no-cors",
-          headers: { "Content-Type": "text/plain" },
-          body: JSON.stringify(payload)
+          redirect:"follow",
+          //headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify(payload),
+          headers:{
+            'Content-Type': 'text/plain;charset=utf-8',
+          }
         });
 
         document.getElementById("display-status").textContent = "สำเร็จ ✓";

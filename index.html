@@ -1288,6 +1288,11 @@
         document.body.removeChild(iframe);
       }, 3000);
     }
+    function buildResponse(obj) {
+      return ContentService
+        .createTextOutput(JSON.stringify(obj))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
   </script>
 
   <!-- Popup กรอกเหตุผลสาย -->

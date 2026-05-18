@@ -881,17 +881,17 @@
     }
   </style>
 </head>
-<!-- Popup กรอกเหตุผลสาย -->
-<div class="popup-overlay" id="late-popup">
-  <div class="popup-box">
-    <div class="popup-title">⏰ เช็คอินสาย</div>
-    <div class="popup-sub" id="late-popup-sub">คุณเช็คอินหลังเวลา 09:00 น. กรุณาระบุเหตุผล</div>
-    <textarea class="popup-input" id="late-reason" placeholder="กรุณากรอกเหตุผลที่มาสาย..."></textarea>
-    <button class="popup-confirm" onclick="confirmLate()">✅ ยืนยันและส่งข้อมูล</button>
-  </div>
-</div>
-
 <body>
+
+  <!-- Popup กรอกเหตุผลสาย -->
+  <div class="popup-overlay" id="late-popup">
+    <div class="popup-box">
+      <div class="popup-title">⏰ เช็คอินสาย</div>
+      <div class="popup-sub" id="late-popup-sub">คุณเช็คอินหลังเวลา 09:00 น. กรุณาระบุเหตุผล</div>
+      <textarea class="popup-input" id="late-reason" placeholder="กรุณากรอกเหตุผลที่มาสาย..."></textarea>
+      <button class="popup-confirm" onclick="confirmLate()">✅ ยืนยันและส่งข้อมูล</button>
+    </div>
+  </div>
 
   <!-- Loading Screen -->
   <div id="loading-screen">
@@ -1021,7 +1021,7 @@
 
   <script>
     // ===== CONFIG =====
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwZTs-CwRYcJ-KxLZytJsHgKmjddO5YVRNkvyHuIqqI4jO5V1V_tAIZ8DyzTfO0IYq1/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzGa1FEOMmE9ItFHhJ-KIWfHWqzZW0W6xYjWz0w8i1xF6HLMlFQqSoT-FHlLqx3nRYx/exec";
     const LIFF_ID = "2010074074-oOwr1JIe";
 
     // ===== STATE =====

@@ -833,6 +833,12 @@
     }
 
     initLiff();
+
+    function buildResponse(obj) {
+      return ContentService
+        .createTextOutput(JSON.stringify(obj))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
   </script>
 </body>
 

@@ -881,6 +881,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- Loading Screen -->
@@ -1011,7 +1012,7 @@
 
   <script>
     // ===== CONFIG =====
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwRn1gVMKNT2pNL7_VSHEno35Ic1ix_x5frUVmLCoC8VhVow5aJgJJuyw0e4_ui_6mE/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxwvrgaLtcZwxddCzCeqpTDFvvWnlO63ypGCddbJ8cEqgGl09Bnf1jK_CQkbYa2Sy9K/exec";
     const LIFF_ID = "2010074074-oOwr1JIe";
 
     // ===== STATE =====
@@ -1194,10 +1195,10 @@
         await fetch(GAS_URL, {
           method: "POST",
           mode: "no-cors",
-          redirect:"follow",
+          redirect: "follow",
           //headers: { "Content-Type": "text/plain" },
           body: JSON.stringify(payload),
-          headers:{
+          headers: {
             'Content-Type': 'text/plain;charset=utf-8',
           }
         });
@@ -1288,7 +1289,7 @@
       }, 3000);
     }
   </script>
-  
+
   <!-- Popup กรอกเหตุผลสาย -->
   <div class="popup-overlay" id="late-popup">
     <div class="popup-box">

@@ -1171,49 +1171,15 @@
     // ===== SUBMIT =====
     async function submitAttendance() {
       if (!capturedImage) return;
+
       if (isLate()) {
         document.getElementById("late-popup-sub").textContent =
           `คุณเช็คอินหลังเวลา ${LATE_TIME} น. กรุณาระบุเหตุผล`;
         document.getElementById("late-popup").classList.add("show");
         return;
       }
-      // // ไม่สาย — ส่งได้เลย
-      // sendData("");
 
-      // setStatus("⏳ กำลังส่งข้อมูล...", "loading");
-      // document.getElementById("submit-btn").disabled = true;
-
-      // const payload = {
-      //   lineUserId,
-      //   employeeName,
-      //   round: selectedRound,
-      //   imageBase64: capturedImage,
-      //   timestamp: new Date().toISOString()
-      // };
-
-      // try {
-      //   await fetch(GAS_URL, {
-      //     method: "POST",
-      //     mode: "no-cors",
-      //     redirect: "follow",
-      //     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      //     body: JSON.stringify(payload)
-      //   })
-      //     .then(res => res.json())
-      //     .then(result => console.log(result))
-      //     .catch(err => console.error(err));
-
-      //   document.getElementById("display-status").textContent = "สำเร็จ ✓";
-      //   document.getElementById("display-status").style.color = "var(--success)";
-      //   setStatus(
-      //     `✅ ลงเวลา${roundLabels[selectedRound]}สำเร็จ\nเวลา: ${new Date().toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" })}`,
-      //     "success"
-      //   );
-      // } catch (err) {
-      //   console.error("Submit:", err);
-      //   setStatus("❌ ส่งข้อมูลไม่สำเร็จ: " + err.message, "error");
-      //   document.getElementById("submit-btn").disabled = false;
-      // }
+      // ✅ เรียกแค่ sendData() อย่างเดียว
       sendData("");
     }
 
@@ -1258,7 +1224,7 @@
         round: selectedRound,
         imageBase64: capturedImage,
         timestamp: new Date().toISOString(),
-        lateReason: lateReason  // ✅ ส่งเหตุผลไปด้วย
+        lateReason: lateReason
       });
 
       const iframe = document.createElement("iframe");
@@ -1279,7 +1245,8 @@
       document.body.appendChild(form);
       form.submit();
 
-      setTimeout(function () {
+      // ✅ รอ 3 วิ แล้วแสดงสำเร็จ (form ไม่รู้ response)
+      setTimeout(() => {
         setStatus(
           "✅ ลงเวลา" + roundLabels[selectedRound] + "สำเร็จ!\n" +
           "เวลา: " + new Date().toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" }),
@@ -1288,11 +1255,6 @@
         document.body.removeChild(form);
         document.body.removeChild(iframe);
       }, 3000);
-    }
-    function buildResponse(obj) {
-      return ContentService
-        .createTextOutput(JSON.stringify(obj))
-        .setMimeType(ContentService.MimeType.JSON);
     }
   </script>
 

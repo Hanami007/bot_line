@@ -862,6 +862,12 @@
     const leaveLabels = { sick: "ลาป่วย", personal: "ลากิจ", vacation: "ลาพักร้อน" };
     const noteHints = { sick: "หมายเหตุ / อาการเบื้องต้น", personal: "หมายเหตุ / เหตุผลการลา", vacation: "หมายเหตุ" };
 
+    let lineUserId = "";
+    let employeeName = "";
+    let leaveType = "sick";
+    let certStream = null;
+    let certImage = null;
+
     window.onload = () => {
       const today = new Date().toISOString().split("T")[0];
       document.getElementById("date-start").value = today;

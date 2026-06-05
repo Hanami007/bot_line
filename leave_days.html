@@ -26,6 +26,7 @@
       --sick: #F87171;
       --personal: #60A5FA;
       --vacation: #34D399;
+      --success: #22C55E;
     }
 
     * {
@@ -229,38 +230,213 @@
       background: linear-gradient(90deg, var(--gold-dim), transparent);
     }
 
+    /* ── Calendar Card ── */
+    .calendar-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px 14px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      margin-bottom: 16px;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 0 6px;
+    }
+
+    .calendar-month-year {
+      font-family: 'Prompt', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--gold-lt);
+    }
+
+    .cal-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Prompt', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .cal-btn:active {
+      background: var(--gold-dim);
+      border-color: var(--gold);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      row-gap: 8px;
+      column-gap: 4px;
+    }
+
+    .day-name {
+      font-family: 'Prompt', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      padding-bottom: 4px;
+      text-align: center;
+    }
+
+    .day-cell {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .day-cell.empty {
+      cursor: default;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .day-cell:not(.empty):active {
+      transform: scale(0.9);
+    }
+
+    .day-cell.today {
+      border: 1.5px solid var(--gold);
+    }
+
+    .day-cell.selected {
+      background: var(--gold-dim);
+      box-shadow: 0 0 0 1px var(--gold) inset;
+    }
+
+    .day-cell::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      display: none;
+    }
+
+    .day-cell.has-event::after {
+      display: block;
+    }
+
+    .day-cell.event-sick {
+      background: rgba(248, 113, 113, 0.15);
+      color: var(--sick);
+    }
+
+    .day-cell.event-sick::after {
+      background: var(--sick);
+    }
+
+    .day-cell.event-personal {
+      background: rgba(96, 165, 250, 0.15);
+      color: var(--personal);
+    }
+
+    .day-cell.event-personal::after {
+      background: var(--personal);
+    }
+
+    .day-cell.event-vacation {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--vacation);
+    }
+
+    .day-cell.event-vacation::after {
+      background: var(--vacation);
+    }
+
+    /* ── Day Detail Card ── */
+    .day-detail-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .detail-header {
+      font-family: 'Prompt', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .detail-body {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .detail-badge {
+      font-family: 'Prompt', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      color: var(--white);
+    }
+
+    .detail-badge.sick { background: var(--sick); }
+    .detail-badge.personal { background: var(--personal); }
+    .detail-badge.vacation { background: var(--vacation); }
+    .detail-badge.none { background: var(--border); color: var(--muted); }
+
     /* ── Leave Quota Cards ── */
     .quota-container {
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      margin-bottom: 24px;
+      gap: 12px;
     }
 
     .quota-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 18px 20px;
+      border-radius: 16px;
+      padding: 14px 16px;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
     }
 
     .quota-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 8px;
     }
 
     .quota-title {
       font-family: 'Prompt', sans-serif;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .quota-title.sick { color: var(--sick); }
@@ -269,49 +445,48 @@
 
     .quota-number {
       font-family: 'Prompt', sans-serif;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--muted);
     }
 
     .quota-number strong {
-      font-size: 18px;
+      font-size: 16px;
       color: var(--white);
     }
 
-    /* ── Progress Bar ── */
     .progress-bar-wrap {
       width: 100%;
-      height: 8px;
+      height: 6px;
       background: rgba(255, 255, 255, 0.05);
-      border-radius: 4px;
+      border-radius: 3px;
       overflow: hidden;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .progress-bar {
       height: 100%;
-      border-radius: 4px;
+      border-radius: 3px;
       width: 0%;
       transition: width 1s ease-out;
     }
 
     .quota-card[data-type="sick"] .progress-bar {
       background: var(--sick);
-      box-shadow: 0 0 8px var(--sick);
+      box-shadow: 0 0 6px var(--sick);
     }
     .quota-card[data-type="personal"] .progress-bar {
       background: var(--personal);
-      box-shadow: 0 0 8px var(--personal);
+      box-shadow: 0 0 6px var(--personal);
     }
     .quota-card[data-type="vacation"] .progress-bar {
       background: var(--vacation);
-      box-shadow: 0 0 8px var(--vacation);
+      box-shadow: 0 0 6px var(--vacation);
     }
 
     .quota-details {
       display: flex;
       justify-content: space-between;
-      font-size: 11px;
+      font-size: 10px;
       color: var(--muted);
     }
 
@@ -405,7 +580,7 @@
     </div>
     <div class="header-info">
       <div class="header-name" id="header-name">กำลังโหลด...</div>
-      <div class="header-sub">สรุปโควตาวันลาประจำปี · Leave Allowances</div>
+      <div class="header-sub">ปฏิทินและโควตาวันลาประจำปี · Leave Calendar</div>
     </div>
     <a href="index.html" class="back-link">← ลงเวลา</a>
   </div>
@@ -413,7 +588,41 @@
   <!-- Main Content -->
   <div class="main">
 
-    <div class="section-label fade-in">สิทธิ์การลาประจำปี 2569</div>
+    <!-- Calendar Section -->
+    <div class="section-label fade-in">ปฏิทินการขอลางาน</div>
+    
+    <div class="calendar-card fade-in">
+      <div class="calendar-header">
+        <button class="cal-btn" onclick="changeMonth(-1)">◀ เดือนก่อน</button>
+        <div class="calendar-month-year" id="cal-month-year">มิถุนายน 2569</div>
+        <button class="cal-btn" onclick="changeMonth(1)">เดือนถัดไป ▶</button>
+      </div>
+      <div class="calendar-grid">
+        <div class="day-name">อา</div>
+        <div class="day-name">จ</div>
+        <div class="day-name">อ</div>
+        <div class="day-name">พ</div>
+        <div class="day-name">พฤ</div>
+        <div class="day-name">ศ</div>
+        <div class="day-name">ส</div>
+      </div>
+      <div class="calendar-grid" id="calendar-days-container">
+        <!-- Injected dynamically by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Day Details -->
+    <div class="day-detail-card fade-in">
+      <div class="detail-header">
+        <span id="detail-date">เลือกวันที่บนปฏิทินเพื่อดูข้อมูล</span>
+        <span id="detail-badge-container"></span>
+      </div>
+      <div class="detail-body" id="detail-body-text">
+        คลิกที่วันที่มีจุดสี (สีแดง = ลาป่วย, สีน้ำเงิน = ลากิจ, สีเขียว = ลาพักร้อน) เพื่อตรวจสอบรายละเอียดใบลา
+      </div>
+    </div>
+
+    <div class="section-label fade-in">สรุปโควตาวันลาคงเหลือประจำปี 2569</div>
     
     <div class="quota-container fade-in">
       
@@ -421,7 +630,7 @@
       <div class="quota-card" data-type="sick">
         <div class="quota-header">
           <span class="quota-title sick">🤒 ลาป่วย</span>
-          <span class="quota-number"><strong id="sick-used">3</strong> / 30 วัน</span>
+          <span class="quota-number"><strong>3</strong> / 30 วัน</span>
         </div>
         <div class="progress-bar-wrap">
           <div class="progress-bar" id="sick-bar"></div>
@@ -436,7 +645,7 @@
       <div class="quota-card" data-type="personal">
         <div class="quota-header">
           <span class="quota-title personal">📝 ลากิจ</span>
-          <span class="quota-number"><strong id="personal-used">2</strong> / 6 วัน</span>
+          <span class="quota-number"><strong>2</strong> / 6 วัน</span>
         </div>
         <div class="progress-bar-wrap">
           <div class="progress-bar" id="personal-bar"></div>
@@ -451,7 +660,7 @@
       <div class="quota-card" data-type="vacation">
         <div class="quota-header">
           <span class="quota-title vacation">🏖️ ลาพักร้อน</span>
-          <span class="quota-number"><strong id="vacation-used">5</strong> / 10 วัน</span>
+          <span class="quota-number"><strong>5</strong> / 10 วัน</span>
         </div>
         <div class="progress-bar-wrap">
           <div class="progress-bar" id="vacation-bar"></div>
@@ -558,6 +767,24 @@
     let lineUserId = "";
     let employeeName = "";
 
+    // Calendar state
+    // Let's lock default calendar view to June 2026 to match history records
+    let currentYear = 2026;
+    let currentMonth = 5; // 0-indexed: 5 is June
+    
+    const thMonths = [
+      "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+      "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    ];
+
+    // Mock leave events mapping
+    const leaveEvents = {
+      "2026-06-04": { type: "sick", label: "ลาป่วย", note: "ลาป่วยเนื่องจากมีไข้สูง ตัวร้อนสูง" },
+      "2026-05-20": { type: "vacation", label: "ลาพักร้อน", note: "ลาพักร้อนประจำปี เดินทางต่างจังหวัด" },
+      "2026-05-21": { type: "vacation", label: "ลาพักร้อน", note: "ลาพักร้อนประจำปี เดินทางต่างจังหวัด" },
+      "2026-06-15": { type: "personal", label: "ลากิจ", note: "ทำธุระติดต่อราชการเรื่องโอนที่ดิน" }
+    };
+
     async function initLiff() {
       try {
         await liff.init({ liffId: LIFF_ID });
@@ -584,14 +811,123 @@
 
       // Animate progress bars
       setTimeout(() => {
-        document.getElementById("sick-bar").style.width = "10%";      // 3 of 30 days
-        document.getElementById("personal-bar").style.width = "33.3%"; // 2 of 6 days
-        document.getElementById("vacation-bar").style.width = "50%";    // 5 of 10 days
+        document.getElementById("sick-bar").style.width = "10%";
+        document.getElementById("personal-bar").style.width = "33.3%";
+        document.getElementById("vacation-bar").style.width = "50%";
       }, 300);
+
+      // Render calendar
+      renderCalendar();
 
       const ls = document.getElementById("loading-screen");
       ls.classList.add("fade-out");
       setTimeout(() => ls.style.display = "none", 500);
+    }
+
+    function renderCalendar() {
+      const container = document.getElementById("calendar-days-container");
+      container.innerHTML = "";
+      
+      const headerTitle = document.getElementById("cal-month-year");
+      headerTitle.textContent = `${thMonths[currentMonth]} ${currentYear + 543}`; // Convert to Buddhist Era year
+
+      // First day of the month
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      // Total days in the month
+      const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+      // Render empty slots for padding
+      for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement("div");
+        emptyCell.className = "day-cell empty";
+        container.appendChild(emptyCell);
+      }
+
+      const today = new Date();
+
+      // Render days
+      for (let day = 1; day <= totalDays; day++) {
+        const cell = document.createElement("div");
+        cell.className = "day-cell";
+        cell.textContent = day;
+
+        const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        
+        // Highlight today
+        if (today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === day) {
+          cell.classList.add("today");
+        }
+
+        // Add event highlight
+        if (leaveEvents[dateString]) {
+          const event = leaveEvents[dateString];
+          cell.classList.add("has-event", `event-${event.type}`);
+        }
+
+        // Day click event
+        cell.onclick = () => selectDate(day, dateString);
+
+        container.appendChild(cell);
+      }
+    }
+
+    function changeMonth(dir) {
+      currentMonth += dir;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear -= 1;
+      } else if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear += 1;
+      }
+      renderCalendar();
+      resetDetailCard();
+    }
+
+    function selectDate(day, dateString) {
+      // Clear previous selection
+      document.querySelectorAll(".day-cell").forEach(c => c.classList.remove("selected"));
+      
+      // Highlight new selection
+      const cells = document.querySelectorAll(".day-cell:not(.empty)");
+      // Find matching cell
+      cells.forEach(c => {
+        if (parseInt(c.textContent) === day) {
+          c.classList.add("selected");
+        }
+      });
+
+      const detailDate = document.getElementById("detail-date");
+      const badgeContainer = document.getElementById("detail-badge-container");
+      const bodyText = document.getElementById("detail-body-text");
+
+      const thDateStr = `${day} ${thMonths[currentMonth]} ${currentYear + 543}`;
+      detailDate.textContent = thDateStr;
+      badgeContainer.innerHTML = "";
+
+      if (leaveEvents[dateString]) {
+        const event = leaveEvents[dateString];
+        
+        const badge = document.createElement("span");
+        badge.className = `detail-badge ${event.type}`;
+        badge.textContent = event.label;
+        badgeContainer.appendChild(badge);
+
+        bodyText.innerHTML = `<strong>ประเภทการลา:</strong> ${event.label}<br><strong>หมายเหตุ:</strong> ${event.note}`;
+      } else {
+        const badge = document.createElement("span");
+        badge.className = "detail-badge none";
+        badge.textContent = "ไม่มีประวัติการลา";
+        badgeContainer.appendChild(badge);
+
+        bodyText.textContent = "ไม่มีบันทึกข้อมูลการลางานในวันนี้ (สถานะการทำงาน: ทำงานปกติ/วันหยุดประจำสัปดาห์)";
+      }
+    }
+
+    function resetDetailCard() {
+      document.getElementById("detail-date").textContent = "เลือกวันที่บนปฏิทินเพื่อดูข้อมูล";
+      document.getElementById("detail-badge-container").innerHTML = "";
+      document.getElementById("detail-body-text").textContent = "คลิกที่วันที่มีจุดสี (สีแดง = ลาป่วย, สีน้ำเงิน = ลากิจ, สีเขียว = ลาพักร้อน) เพื่อตรวจสอบรายละเอียดใบลา";
     }
 
     initLiff();

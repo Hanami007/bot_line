@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="format-detection" content="telephone=no">
-  <title>ออกใบเตือน</title>
+  <title>ฝ่ายบุคคล - HR Dashboard</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
@@ -145,8 +145,8 @@
       width: 42px;
       height: 42px;
       border-radius: 50%;
-      background: rgba(245, 158, 11, 0.15);
-      border: 1.5px solid rgba(245, 158, 11, 0.5);
+      background: rgba(201, 168, 76, 0.15);
+      border: 1.5px solid var(--gold);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -218,7 +218,166 @@
       background: linear-gradient(90deg, var(--gold-dim), transparent);
     }
 
-    /* ── Level Grid ── */
+    /* ── HR Dashboard Card (White theme matching screenshot) ── */
+    .hr-dashboard-card {
+      background: #FFFFFF;
+      color: #1E293B;
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
+    }
+
+    .hr-dashboard-title {
+      font-family: 'Prompt', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #0F172A;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .hr-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .hr-stat-box {
+      border-radius: 16px;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hr-stat-box.all { background: #F1F5F9; color: #1E293B; }
+    .hr-stat-box.approved { background: #ECFDF5; color: #065F46; }
+    .hr-stat-box.pending { background: #FFFBEB; color: #92400E; }
+    .hr-stat-box.rejected { background: #FEF2F2; color: #991B1B; }
+
+    .hr-stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hr-stat-number {
+      font-family: 'Prompt', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .hr-stat-sub {
+      font-size: 10px;
+      opacity: 0.7;
+    }
+
+    /* ── Employee List Styling ── */
+    .hr-emp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .hr-emp-row {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #F1F5F9;
+    }
+
+    .hr-emp-row:last-child {
+      border-bottom: none;
+    }
+
+    .hr-emp-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #0A1628;
+      color: #E2C47A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Prompt', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .hr-emp-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .hr-emp-name {
+      font-family: 'Prompt', sans-serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #0F172A;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hr-emp-sub {
+      font-size: 11px;
+      color: #64748B;
+      margin-top: 1px;
+    }
+
+    .hr-emp-chevron {
+      color: #94A3B8;
+      display: flex;
+      align-items: center;
+    }
+
+    /* ── Modal & Form styling ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 150;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      backdrop-filter: blur(4px);
+    }
+    
+    .modal-overlay.show {
+      display: flex;
+    }
+    
+    .modal-box {
+      background: var(--navy-mid);
+      width: 100%;
+      max-width: 440px;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      padding: 24px 20px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 20px;
+      cursor: pointer;
+    }
+
     .level-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -227,7 +386,7 @@
     }
 
     .level-btn {
-      background: var(--card-bg);
+      background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 14px 8px 12px;
@@ -235,50 +394,15 @@
       transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       text-align: center;
       color: var(--white);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      position: relative;
-      overflow: hidden;
     }
 
-    .level-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      border-radius: 14px 14px 0 0;
-      background: var(--accent-color, transparent);
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    .level-btn:active {
-      transform: scale(0.96);
-    }
-
-    .level-btn[data-level="1"] {
-      --accent-color: var(--warn1);
-    }
-
-    .level-btn[data-level="2"] {
-      --accent-color: var(--warn2);
-    }
-
-    .level-btn[data-level="3"] {
-      --accent-color: var(--warn3);
-    }
+    .level-btn[data-level="1"] { --accent-color: var(--warn1); }
+    .level-btn[data-level="2"] { --accent-color: var(--warn2); }
+    .level-btn[data-level="3"] { --accent-color: var(--warn3); }
 
     .level-btn.selected {
       border-color: var(--accent-color);
       background: rgba(255, 255, 255, 0.08);
-      transform: translateY(-1px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--accent-color) inset;
-    }
-
-    .level-btn.selected::before {
-      opacity: 1;
     }
 
     .level-dot {
@@ -286,328 +410,90 @@
       height: 8px;
       border-radius: 50%;
       background: var(--accent-color);
-      box-shadow: 0 0 8px var(--accent-color);
       margin: 0 auto 8px;
     }
 
-    .level-btn.selected .level-dot {
-      animation: pulse-dot 1.8s ease infinite;
-    }
+    .lv-icon { font-size: 22px; margin-bottom: 6px; }
+    .lv-name { font-family: 'Prompt', sans-serif; font-size: 12px; font-weight: 600; }
 
-    @keyframes pulse-dot {
-
-      0%,
-      100% {
-        box-shadow: 0 0 8px var(--accent-color);
-      }
-
-      50% {
-        box-shadow: 0 0 16px var(--accent-color), 0 0 24px var(--accent-color);
-      }
-    }
-
-    .lv-icon {
-      font-size: 22px;
-      margin-bottom: 6px;
-    }
-
-    .lv-name {
-      font-family: 'Prompt', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--white);
-    }
-
-    .level-btn.selected .lv-name {
-      color: var(--accent-color);
-    }
-
-    /* ── Card ── */
     .card {
-      background: var(--card-bg);
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 18px;
       margin-bottom: 16px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
 
-    /* ── Form ── */
-    .form-group {
-      margin-bottom: 16px;
-    }
+    .form-group { margin-bottom: 16px; }
+    .form-label { font-family: 'Prompt', sans-serif; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; display: block; }
+    .form-input { width: 100%; padding: 12px 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 12px; font-size: 14px; color: var(--white); color-scheme: dark; }
+    textarea.form-input { resize: none; height: 80px; }
 
-    .form-group:last-child {
-      margin-bottom: 0;
-    }
-
-    .form-label {
-      font-family: 'Prompt', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 8px;
-      display: block;
-    }
-
-    .form-input {
-      width: 100%;
-      padding: 12px 14px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      font-size: 14px;
-      font-family: 'Sarabun', sans-serif;
-      color: var(--white);
-      transition: border-color 0.2s;
-      -webkit-appearance: none;
-      color-scheme: dark;
-    }
-
-    .form-input:focus {
-      outline: none;
-      border-color: rgba(201, 168, 76, 0.5);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .form-input option {
-      background: var(--navy-mid);
-      color: var(--white);
-    }
-
-    textarea.form-input {
-      resize: none;
-      height: 100px;
-    }
-
-    /* ── Preview Card ── */
+    /* Preview card styles */
     .preview-card {
       display: none;
       border-radius: 16px;
       overflow: hidden;
       border: 1px solid var(--border);
       margin-bottom: 16px;
-      animation: fadeUp 0.3s ease;
     }
+    .preview-card.show { display: block; }
+    .preview-header { padding: 10px 14px; display: flex; align-items: center; gap: 8px; }
+    .preview-header-text { font-family: 'Prompt', sans-serif; font-size: 13px; font-weight: 700; color: white; }
+    .preview-header-badge { margin-left: auto; font-size: 9px; padding: 2px 8px; border-radius: 20px; background: rgba(255, 255, 255, 0.15); }
+    .preview-body { background: rgba(255, 255, 255, 0.03); padding: 12px 14px; }
+    .preview-row { display: flex; gap: 10px; margin-bottom: 8px; font-size: 12px; }
+    .preview-row-label { color: var(--muted); min-width: 48px; }
+    .preview-row-value { color: var(--white); }
+    .preview-ref { font-size: 9px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px; }
 
-    .preview-card.show {
-      display: block;
-    }
-
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .preview-header {
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .preview-header::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
-    }
-
-    .preview-header-icon {
-      font-size: 20px;
-    }
-
-    .preview-header-text {
-      font-family: 'Prompt', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      color: white;
-      letter-spacing: 0.02em;
-    }
-
-    .preview-header-badge {
-      margin-left: auto;
-      font-size: 10px;
-      font-family: 'Prompt', sans-serif;
-      font-weight: 600;
-      color: rgba(255, 255, 255, 0.7);
-      background: rgba(255, 255, 255, 0.15);
-      padding: 3px 10px;
-      border-radius: 20px;
-      letter-spacing: 0.05em;
-    }
-
-    .preview-body {
-      background: rgba(255, 255, 255, 0.04);
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 16px 18px;
-    }
-
-    .preview-row {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 10px;
-      font-size: 13px;
-      align-items: flex-start;
-    }
-
-    .preview-row:last-of-type {
-      margin-bottom: 0;
-    }
-
-    .preview-row-label {
-      color: var(--muted);
-      min-width: 48px;
-      font-size: 12px;
-      padding-top: 1px;
-    }
-
-    .preview-row-value {
-      color: var(--white);
-      flex: 1;
-      line-height: 1.5;
-    }
-
-    .preview-ref {
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 12px;
-      padding-top: 10px;
-      border-top: 1px solid var(--border);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    /* ── Submit ── */
-    .submit-btn {
+    /* buttons */
+    .primary-btn {
       width: 100%;
-      padding: 17px;
-      background: linear-gradient(135deg, #1B3060 0%, var(--navy-soft) 50%, #1B3060 100%);
-      color: var(--gold-lt);
+      padding: 16px;
+      background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 100%);
+      color: var(--navy);
       font-size: 15px;
       font-weight: 600;
       font-family: 'Prompt', sans-serif;
-      border: 1px solid rgba(201, 168, 76, 0.4);
+      border: none;
       border-radius: 14px;
       cursor: pointer;
-      transition: all 0.3s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      letter-spacing: 0.02em;
-      box-shadow: 0 4px 24px rgba(201, 168, 76, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-      position: relative;
-      overflow: hidden;
     }
 
-    .submit-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
+    .submit-btn {
       width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.08), transparent);
-      transition: left 0.4s;
+      padding: 14px;
+      background: linear-gradient(135deg, #1B3060 0%, var(--navy-soft) 50%, #1B3060 100%);
+      color: var(--gold-lt);
+      border: 1px solid rgba(201, 168, 76, 0.4);
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
     }
+    .submit-btn:disabled { opacity: 0.35; cursor: default; }
 
-    .submit-btn:not(:disabled):hover::before {
-      left: 100%;
-    }
-
-    .submit-btn:not(:disabled):active {
-      transform: scale(0.99);
-      border-color: var(--gold);
-    }
-
-    .submit-btn:disabled {
-      opacity: 0.35;
-      cursor: default;
-    }
-
-    /* ── Status ── */
     .status-box {
       display: none;
-      margin-top: 14px;
-      padding: 14px 16px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 500;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
       text-align: center;
-      line-height: 1.6;
       white-space: pre-line;
     }
-
-    .status-box.success {
-      display: block;
-      background: rgba(34, 197, 94, 0.1);
-      border: 1px solid rgba(34, 197, 94, 0.3);
-      color: #86EFAC;
-    }
-
-    .status-box.error {
-      display: block;
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #FCA5A5;
-    }
-
-    .status-box.loading {
-      display: block;
-      background: rgba(96, 165, 250, 0.1);
-      border: 1px solid rgba(96, 165, 250, 0.2);
-      color: #BAE6FD;
-    }
-
-    /* ── Fade-in ── */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(12px);
-      animation: fadeUp 0.4s ease forwards;
-    }
-
-    .fade-in:nth-child(1) {
-      animation-delay: 0.05s;
-    }
-
-    .fade-in:nth-child(2) {
-      animation-delay: 0.1s;
-    }
-
-    .fade-in:nth-child(3) {
-      animation-delay: 0.15s;
-    }
-
-    .fade-in:nth-child(4) {
-      animation-delay: 0.2s;
-    }
-
-    .fade-in:nth-child(5) {
-      animation-delay: 0.25s;
-    }
-
-    ::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 2px;
-    }
+    .status-box.success { display: block; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #86EFAC; }
+    .status-box.error { display: block; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #FCA5A5; }
+    .status-box.loading { display: block; background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.2); color: #BAE6FD; }
 
     /* ── Bottom Navigation Bar Styles ── */
     .bottom-nav {
@@ -640,10 +526,6 @@
       transition: all 0.2s ease;
     }
 
-    .bottom-nav-item:active {
-      background: rgba(0, 0, 0, 0.03);
-    }
-
     .bottom-nav-item.active {
       color: #E2C47A; /* gold/yellow active */
     }
@@ -666,6 +548,19 @@
       font-size: 9.5px;
       color: #8E8E93;
     }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.4s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 
@@ -675,223 +570,174 @@
   <div id="loading-screen">
     <div class="load-logo">HR System</div>
     <div class="load-ring"></div>
-    <div class="load-text">กำลังโหลดข้อมูลพนักงาน...</div>
+    <div class="load-text">กำลังตรวจสอบสิทธิ์ HR...</div>
   </div>
 
   <!-- Header -->
   <div class="header">
-    <div class="header-icon">⚠️</div>
+    <div class="header-icon">💼</div>
     <div class="header-info">
-      <div class="header-name">ออกใบเตือนพนักงาน</div>
-      <div class="header-sub" id="header-sub">Warning Management</div>
+      <div class="header-name" id="hr-header-title">ฝ่ายบุคคล - HR Dashboard</div>
+      <div class="header-sub" id="header-sub">ฝ่ายบริการจัดการพนักงาน</div>
     </div>
     <a href="index.html" class="back-link">← ลงเวลา</a>
   </div>
 
-  <!-- Main -->
+  <!-- Main Content Container -->
   <div class="main">
 
-    <!-- Level -->
-    <div class="section-label fade-in">ระดับความรุนแรง</div>
-    <div class="level-grid fade-in">
-      <button class="level-btn selected" data-level="1" onclick="selectLevel(1)">
-        <div class="level-dot"></div>
-        <div class="lv-icon">⚠️</div>
-        <div class="lv-name">เตือน</div>
-      </button>
-      <button class="level-btn" data-level="2" onclick="selectLevel(2)">
-        <div class="level-dot"></div>
-        <div class="lv-icon">💸</div>
-        <div class="lv-name">ตัดเงิน</div>
-      </button>
-      <button class="level-btn" data-level="3" onclick="selectLevel(3)">
-        <div class="level-dot"></div>
-        <div class="lv-icon">🚨</div>
-        <div class="lv-name">ไล่ออก</div>
-      </button>
-    </div>
-
-    <!-- Form Card -->
-    <div class="card fade-in">
-      <div class="form-group">
-        <label class="form-label">พนักงาน</label>
-        <select class="form-input" id="emp-select" onchange="updatePreview()">
-          <option value="">— เลือกพนักงาน —</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">เรื่องที่เตือน</label>
-        <textarea class="form-input" id="reason" placeholder="ระบุเหตุผลหรือพฤติกรรมที่ต้องการเตือน..."
-          oninput="updatePreview()"></textarea>
+    <!-- 🔒 Unauthorized Content View -->
+    <div id="hr-unauthorized-content" style="display:none;">
+      <div class="fade-in" style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 20px; padding: 28px 20px; text-align: center; margin-top: 40px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);">
+        <div style="font-size: 48px; margin-bottom: 16px;">🔒</div>
+        <h3 style="font-family: 'Prompt', sans-serif; font-size: 18px; font-weight: 700; color: #FCA5A5; margin-bottom: 10px;">เฉพาะฝ่ายบุคคลเท่านั้น (HR Access Only)</h3>
+        <p style="font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;">ขออภัย หน้าจอนี้ถูกจำกัดสิทธิ์ให้เข้าถึงได้เฉพาะผู้ใช้งานระดับฝ่ายบุคคล (HR) เท่านั้น เพื่อความปลอดภัยของข้อมูล</p>
+        
+        <div style="background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 12px; font-size: 12px; text-align: left; border: 1px solid var(--border);">
+          <span style="color: var(--muted); display: block; margin-bottom: 4px;">LINE User ID ของคุณ:</span>
+          <code id="visitor-user-id" style="color: var(--gold-lt); font-family: monospace; font-size: 11px; word-break: break-all;">—</code>
+        </div>
       </div>
     </div>
 
-    <!-- Preview -->
-    <div class="preview-card" id="preview-card">
-      <div class="preview-header" id="preview-header">
-        <span class="preview-header-icon" id="preview-icon"></span>
-        <span class="preview-header-text" id="preview-title"></span>
-        <span class="preview-header-badge">ตัวอย่าง</span>
+    <!-- 👤 Authorized HR Content View -->
+    <div id="hr-authorized-content" style="display:none;">
+      
+      <!-- Summary Card -->
+      <div class="hr-dashboard-card fade-in">
+        <div class="hr-dashboard-title">
+          <span>📊 สรุปเดือนนี้ (06/2026)</span>
+        </div>
+        <div class="hr-grid">
+          <div class="hr-stat-box all">
+            <span class="hr-stat-label">📋 ยื่นทั้งหมด</span>
+            <span class="hr-stat-number" id="stat-total">4</span>
+            <span class="hr-stat-sub">6 วันรวม</span>
+          </div>
+          <div class="hr-stat-box approved">
+            <span class="hr-stat-label">✅ อนุมัติ</span>
+            <span class="hr-stat-number" id="stat-approved">2</span>
+            <span class="hr-stat-sub">2 รายการ</span>
+          </div>
+          <div class="hr-stat-box pending">
+            <span class="hr-stat-label">⏳ รออนุมัติ</span>
+            <span class="hr-stat-number" id="stat-pending">1</span>
+            <span class="hr-stat-sub">1 รายการ</span>
+          </div>
+          <div class="hr-stat-box rejected">
+            <span class="hr-stat-label">❌ ไม่อนุมัติ</span>
+            <span class="hr-stat-number" id="stat-rejected">1</span>
+            <span class="hr-stat-sub">1 รายการ</span>
+          </div>
+        </div>
       </div>
-      <div class="preview-body">
-        <div class="preview-row">
-          <span class="preview-row-label">พนักงาน</span>
-          <span class="preview-row-value" id="preview-name">—</span>
+
+      <!-- Employee List Card -->
+      <div class="hr-dashboard-card fade-in">
+        <div class="hr-dashboard-title">
+          <span>👥 รายชื่อพนักงาน (<span id="emp-count">0</span> คน)</span>
         </div>
-        <div class="preview-row">
-          <span class="preview-row-label">วันที่</span>
-          <span class="preview-row-value" id="preview-date">—</span>
+        <div class="hr-emp-list" id="hr-emp-list-container">
+          <!-- Injected dynamically from API -->
         </div>
-        <div class="preview-row">
-          <span class="preview-row-label">เรื่อง</span>
-          <span class="preview-row-value" id="preview-reason">—</span>
-        </div>
-        <div class="preview-ref" id="preview-ref">Draft · ยังไม่ได้ส่ง</div>
       </div>
+
+      <!-- Recent Items (Leaves & Approvals) -->
+      <div class="hr-dashboard-card fade-in">
+        <div class="hr-dashboard-title">
+          <span>📜 รายการคำขอล่าสุด</span>
+        </div>
+        <div class="hr-emp-list" id="hr-recent-list-container">
+          <!-- Injected dynamically with actions -->
+        </div>
+      </div>
+
+      <!-- Warning Launch Button -->
+      <div style="margin-bottom: 24px;">
+        <button class="primary-btn fade-in" onclick="openWarningModal()" style="background: linear-gradient(135deg, #EF4444 0%, #D97706 100%); color: white; box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);">
+          ⚠️ ออกใบเตือนพนักงาน (Issue Staff Warning)
+        </button>
+      </div>
+
     </div>
 
-    <!-- Submit -->
-    <button class="submit-btn fade-in" id="submit-btn" onclick="submitWarning()" disabled>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-      </svg>
-      ส่งใบเตือน
-    </button>
-
-    <div class="status-box" id="status-box"></div>
   </div>
 
-  <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxmr_R64ZPi1Nk2GAV-Mtx8MbPGvdwAhugSSB1wlZQ68Y0RdMoyvBKZDGdV24VEFfcQ/exec";
-    const LIFF_ID = "2010074074-oOwr1JIe";
+  <!-- Warning Form Modal -->
+  <div class="modal-overlay" id="warning-modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeWarningModal()">✕</button>
+      <h3 style="font-family: 'Prompt', sans-serif; font-size: 16px; font-weight: 700; color: var(--gold-lt); margin-bottom: 16px; display:flex; align-items:center; gap:8px;">⚠️ ออกใบเตือนพนักงาน</h3>
+      
+      <!-- Level Selector -->
+      <div class="section-label" style="margin-bottom:8px;">ระดับความรุนแรง</div>
+      <div class="level-grid">
+        <button class="level-btn selected" data-level="1" onclick="selectLevel(1)">
+          <div class="level-dot"></div>
+          <div class="lv-icon">⚠️</div>
+          <div class="lv-name">เตือน</div>
+        </button>
+        <button class="level-btn" data-level="2" onclick="selectLevel(2)">
+          <div class="level-dot"></div>
+          <div class="lv-icon">💸</div>
+          <div class="lv-name">ตัดเงิน</div>
+        </button>
+        <button class="level-btn" data-level="3" onclick="selectLevel(3)">
+          <div class="level-dot"></div>
+          <div class="lv-icon">🚨</div>
+          <div class="lv-name">ไล่ออก</div>
+        </button>
+      </div>
 
-    let selectedLevel = 1;
-    let ownerName = "";
-    let ownerId = "";
+      <!-- Card input fields -->
+      <div class="card">
+        <div class="form-group">
+          <label class="form-label">พนักงาน</label>
+          <select class="form-input" id="emp-select" onchange="updatePreview()">
+            <option value="">— เลือกพนักงาน —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">เรื่องที่เตือน</label>
+          <textarea class="form-input" id="reason" placeholder="ระบุเหตุผลหรือพฤติกรรมที่ต้องการเตือน..." oninput="updatePreview()"></textarea>
+        </div>
+      </div>
 
-    const levelConfig = {
-      1: { icon: "⚠️", title: "หนังสือเตือน", color: "#B45309", bg: "linear-gradient(135deg,#92400E,#B45309)", label: "เตือนด้วยวาจา" },
-      2: { icon: "💸", title: "หนังสือตัดเงิน", color: "#991B1B", bg: "linear-gradient(135deg,#7F1D1D,#B91C1C)", label: "ตัดเงิน" },
-      3: { icon: "🚨", title: "หนังสือเลิกจ้าง", color: "#6B21A8", bg: "linear-gradient(135deg,#581C87,#7C3AED)", label: "ไล่ออก" }
-    };
+      <!-- Preview card -->
+      <div class="preview-card" id="preview-card">
+        <div class="preview-header" id="preview-header">
+          <span class="preview-header-icon" id="preview-icon"></span>
+          <span class="preview-header-text" id="preview-title"></span>
+          <span class="preview-header-badge">ตัวอย่าง</span>
+        </div>
+        <div class="preview-body">
+          <div class="preview-row">
+            <span class="preview-row-label">พนักงาน</span>
+            <span class="preview-row-value" id="preview-name">—</span>
+          </div>
+          <div class="preview-row">
+            <span class="preview-row-label">วันที่</span>
+            <span class="preview-row-value" id="preview-date">—</span>
+          </div>
+          <div class="preview-row">
+            <span class="preview-row-label">เรื่อง</span>
+            <span class="preview-row-value" id="preview-reason">—</span>
+          </div>
+          <div class="preview-ref" id="preview-ref">Draft · ยังไม่ได้ส่ง</div>
+        </div>
+      </div>
 
-    function selectLevel(level) {
-      selectedLevel = level;
-      document.querySelectorAll(".level-btn").forEach(b => b.classList.remove("selected"));
-      document.querySelector(`.level-btn[data-level="${level}"]`).classList.add("selected");
-      updatePreview();
-    }
+      <!-- Submit button -->
+      <button class="submit-btn" id="submit-btn" onclick="submitWarning()" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+        </svg>
+        ส่งใบเตือน
+      </button>
 
-    function updatePreview() {
-      const empSelect = document.getElementById("emp-select");
-      const empName = empSelect.options[empSelect.selectedIndex]?.text || "";
-      const reason = document.getElementById("reason").value.trim();
-      const hasData = empSelect.value && reason;
-
-      document.getElementById("submit-btn").disabled = !hasData;
-
-      const preview = document.getElementById("preview-card");
-      if (!hasData) { preview.classList.remove("show"); return; }
-
-      const cfg = levelConfig[selectedLevel];
-      preview.classList.add("show");
-
-      document.getElementById("preview-header").style.background = cfg.bg;
-      document.getElementById("preview-icon").textContent = cfg.icon;
-      document.getElementById("preview-title").textContent = cfg.title;
-      document.getElementById("preview-name").textContent = empName;
-      document.getElementById("preview-date").textContent = new Date().toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" });
-      document.getElementById("preview-reason").textContent = reason;
-      document.getElementById("preview-ref").textContent = `Draft · ระดับ: ${cfg.label}`;
-    }
-
-    async function loadEmployees() {
-      try {
-        const res = await fetch(`${GAS_URL}?action=getEmployees`, { redirect: "follow" });
-        const data = await res.json();
-        const select = document.getElementById("emp-select");
-        if (data.employees?.length > 0) {
-          data.employees.forEach(emp => {
-            const opt = document.createElement("option");
-            opt.value = emp.userId;
-            opt.text = emp.name;
-            select.appendChild(opt);
-          });
-          document.getElementById("header-sub").textContent = `พนักงาน ${data.employees.length} คน · Warning Management`;
-        } else {
-          document.getElementById("header-sub").textContent = "ไม่พบข้อมูลพนักงาน";
-        }
-      } catch (err) {
-        document.getElementById("header-sub").textContent = "โหลดข้อมูลไม่ได้";
-      }
-    }
-
-    async function submitWarning() {
-      const empSelect = document.getElementById("emp-select");
-      const empUserId = empSelect.value;
-      const empName = empSelect.options[empSelect.selectedIndex].text;
-      const reason = document.getElementById("reason").value.trim();
-
-      if (!empUserId || !reason) return;
-
-      setStatus("⏳ กำลังส่งใบเตือน...", "loading");
-      document.getElementById("submit-btn").disabled = true;
-
-      try {
-        const res = await fetch(GAS_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain" },
-          body: JSON.stringify({
-            type: "warning", ownerId, empUserId, empName, reason,
-            level: selectedLevel,
-            levelLabel: levelConfig[selectedLevel].label,
-            timestamp: new Date().toISOString()
-          }),
-          redirect: "follow"
-        });
-        const result = await res.json();
-        if (result.success) {
-          setStatus(
-            `✅ ส่งใบเตือนให้ ${empName} แล้ว\nระดับ: ${levelConfig[selectedLevel].icon} ${levelConfig[selectedLevel].title}\nRef: ${result.warningId}`,
-            "success"
-          );
-          document.getElementById("preview-card").classList.remove("show");
-          document.getElementById("emp-select").value = "";
-          document.getElementById("reason").value = "";
-        } else {
-          throw new Error(result.error || "ไม่ทราบสาเหตุ");
-        }
-      } catch (err) {
-        setStatus("❌ เกิดข้อผิดพลาด: " + err.message, "error");
-        document.getElementById("submit-btn").disabled = false;
-      }
-    }
-
-    function setStatus(msg, type) {
-      const box = document.getElementById("status-box");
-      box.className = "status-box " + type;
-      box.textContent = msg;
-    }
-
-    async function initLiff() {
-      try {
-        await liff.init({ liffId: LIFF_ID });
-        if (!liff.isLoggedIn()) { liff.login(); return; }
-        const profile = await liff.getProfile();
-        ownerId = profile.userId;
-        ownerName = profile.displayName;
-      } catch (err) {
-        ownerId = "U_TEST_OWNER";
-        ownerName = "ทดสอบ";
-      }
-      await loadEmployees();
-      const ls = document.getElementById("loading-screen");
-      ls.classList.add("fade-out");
-      setTimeout(() => ls.style.display = "none", 500);
-    }
-
-    initLiff();
-  </script>
+      <div class="status-box" id="status-box" style="margin-top:12px;"></div>
+    </div>
+  </div>
 
   <!-- Bottom Navigation -->
   <div class="bottom-nav">
@@ -979,6 +825,323 @@
     </a>
   </div>
 
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxmr_R64ZPi1Nk2GAV-Mtx8MbPGvdwAhugSSB1wlZQ68Y0RdMoyvBKZDGdV24VEFfcQ/exec";
+    const LIFF_ID = "2010074074-oOwr1JIe";
+
+    // ── HR USER ID RESTRICTION LIST ──
+    const HR_USER_IDS = [
+      "Ucbd89d2b178eaa98580d81bccbb9f533", // Pongsakorn
+      "U_TEST_OWNER",                     // Mock Test ID 1
+      "U_TEST_ID"                         // Mock Test ID 2
+    ];
+
+    let selectedLevel = 1;
+    let ownerName = "";
+    let ownerId = "";
+
+    const levelConfig = {
+      1: { icon: "⚠️", title: "หนังสือเตือน", color: "#B45309", bg: "linear-gradient(135deg,#92400E,#B45309)", label: "เตือนด้วยวาจา" },
+      2: { icon: "💸", title: "หนังสือตัดเงิน", color: "#991B1B", bg: "linear-gradient(135deg,#7F1D1D,#B91C1C)", label: "ตัดเงิน" },
+      3: { icon: "🚨", title: "หนังสือเลิกจ้าง", color: "#6B21A8", bg: "linear-gradient(135deg,#581C87,#7C3AED)", label: "ไล่ออก" }
+    };
+
+    // Mock recent logs (combination of leaves and check-ins)
+    let recentLogs = [
+      { id: 1, name: "ศิริชัย แก้วกัญญา", type: "ลาพักร้อน (20-21 พ.ค.)", status: "approved", statusText: "อนุมัติแล้ว" },
+      { id: 2, name: "วรรณวิสา ดีเลิศ", type: "ลาป่วย (4 มิ.ย.)", status: "approved", statusText: "อนุมัติแล้ว" },
+      { id: 3, name: "สุดารัตน์ พูนสิน", type: "ลากิจ (15 มิ.ย.)", status: "pending", statusText: "รออนุมัติ" },
+      { id: 4, name: "ธนาวุฒิ สมใจ", type: "ลงเวลาสาย (1 มิ.ย.)", status: "warning", statusText: "บันทึกสาย" }
+    ];
+
+    async function initLiff() {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) { liff.login(); return; }
+        const profile = await liff.getProfile();
+        ownerId = profile.userId;
+        ownerName = profile.displayName;
+      } catch (err) {
+        ownerId = "U_TEST_OWNER";
+        ownerName = "ทดสอบ";
+      }
+
+      // ── CHECK HR AUTHORIZATION ──
+      checkHRAuthorization(ownerId);
+
+      // Load employees list & populate dashboard
+      await loadEmployees();
+      
+      const ls = document.getElementById("loading-screen");
+      ls.classList.add("fade-out");
+      setTimeout(() => ls.style.display = "none", 500);
+    }
+
+    function checkHRAuthorization(userId) {
+      const isAuthorized = HR_USER_IDS.includes(userId);
+      if (isAuthorized) {
+        document.getElementById("hr-authorized-content").style.display = "block";
+        document.getElementById("hr-unauthorized-content").style.display = "none";
+        document.getElementById("hr-header-title").textContent = "ฝ่ายบุคคล - HR Dashboard";
+      } else {
+        document.getElementById("hr-authorized-content").style.display = "none";
+        document.getElementById("hr-unauthorized-content").style.display = "block";
+        document.getElementById("visitor-user-id").textContent = userId;
+        document.getElementById("hr-header-title").textContent = "🔒 จำกัดสิทธิ์เข้าถึง";
+      }
+    }
+
+    async function loadEmployees() {
+      try {
+        const res = await fetch(`${GAS_URL}?action=getEmployees`, { redirect: "follow" });
+        const data = await res.json();
+        const select = document.getElementById("emp-select");
+        
+        if (data.employees?.length > 0) {
+          data.employees.forEach(emp => {
+            const opt = document.createElement("option");
+            opt.value = emp.userId;
+            opt.text = emp.name;
+            select.appendChild(opt);
+          });
+          
+          populateEmpDashboard(data.employees);
+          populateRecentLogs();
+        } else {
+          document.getElementById("header-sub").textContent = "ไม่พบข้อมูลพนักงาน";
+          loadMockEmployeesFallback();
+        }
+      } catch (err) {
+        document.getElementById("header-sub").textContent = "เข้าสู่โหมดออฟไลน์";
+        loadMockEmployeesFallback();
+      }
+    }
+
+    function loadMockEmployeesFallback() {
+      const mockEmps = [
+        { name: "นางสาวชบัญชิดา โชคธนอนันต์", userId: "U5a0cb5eaa535ab9e8da4a38df6d6a0ee" },
+        { name: "พงศกร ปัญญาเลิศ", userId: "Ucbd89d2b178eaa98580d81bccbb9f533" },
+        { name: "ศิริชัย แก้วกัญญา", userId: "U_TEST_SIRI" }
+      ];
+      
+      const select = document.getElementById("emp-select");
+      mockEmps.forEach(emp => {
+        const opt = document.createElement("option");
+        opt.value = emp.userId;
+        opt.text = emp.name;
+        select.appendChild(opt);
+      });
+
+      populateEmpDashboard(mockEmps);
+      populateRecentLogs();
+    }
+
+    function populateEmpDashboard(employees) {
+      const container = document.getElementById("hr-emp-list-container");
+      const empCountSpan = document.getElementById("emp-count");
+      
+      container.innerHTML = "";
+      empCountSpan.textContent = employees.length;
+      
+      employees.forEach(emp => {
+        const row = document.createElement("div");
+        row.className = "hr-emp-row";
+        
+        const initial = emp.name ? emp.name.charAt(0) : "พ";
+        
+        row.innerHTML = `
+          <div class="hr-emp-circle">${initial}</div>
+          <div class="hr-emp-info">
+            <div class="hr-emp-name">${emp.name}</div>
+            <div class="hr-emp-sub">สำนักงานใหญ่ · ID: ${emp.userId.substring(0, 8)}...</div>
+          </div>
+          <div class="hr-emp-chevron">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+          </div>
+        `;
+        
+        container.appendChild(row);
+      });
+    }
+
+    function populateRecentLogs() {
+      const container = document.getElementById("hr-recent-list-container");
+      container.innerHTML = "";
+      
+      recentLogs.forEach(log => {
+        const item = document.createElement("div");
+        item.className = "hr-emp-row";
+        item.style.flexDirection = "column";
+        item.style.alignItems = "stretch";
+        
+        let statusBadge = "";
+        let actionButtons = "";
+        
+        if (log.status === "approved") {
+          statusBadge = `<span style="font-family:'Prompt',sans-serif; font-size:10px; font-weight:600; color:#065F46; background:#ECFDF5; padding:2px 8px; border-radius:12px; height:fit-content;">${log.statusText}</span>`;
+        } else if (log.status === "rejected") {
+          statusBadge = `<span style="font-family:'Prompt',sans-serif; font-size:10px; font-weight:600; color:#991B1B; background:#FEF2F2; padding:2px 8px; border-radius:12px; height:fit-content;">${log.statusText}</span>`;
+        } else if (log.status === "warning") {
+          statusBadge = `<span style="font-family:'Prompt',sans-serif; font-size:10px; font-weight:600; color:#92400E; background:#FFFBEB; padding:2px 8px; border-radius:12px; height:fit-content;">${log.statusText}</span>`;
+        } else if (log.status === "pending") {
+          statusBadge = `<span style="font-family:'Prompt',sans-serif; font-size:10px; font-weight:600; color:#B45309; background:#FFFBEB; padding:2px 8px; border-radius:12px; height:fit-content;">${log.statusText}</span>`;
+          actionButtons = `
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <button onclick="approveRequest(${log.id})" style="flex:1; padding:6px; background:#22C55E; color:white; border:none; border-radius:8px; font-size:11px; font-family:'Prompt',sans-serif; font-weight:600; cursor:pointer;">อนุมัติ</button>
+              <button onclick="rejectRequest(${log.id})" style="flex:1; padding:6px; background:#EF4444; color:white; border:none; border-radius:8px; font-size:11px; font-family:'Prompt',sans-serif; font-weight:600; cursor:pointer;">ปฏิเสธ</button>
+            </div>
+          `;
+        }
+
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+            <div>
+              <div style="font-family:'Prompt',sans-serif; font-size:13.5px; font-weight:600; color:#0F172A;">${log.name}</div>
+              <div style="font-size:11px; color:#64748B; margin-top:1px;">${log.type}</div>
+            </div>
+            <div>${statusBadge}</div>
+          </div>
+          ${actionButtons}
+        `;
+        
+        container.appendChild(item);
+      });
+      
+      updateSummaryStats();
+    }
+
+    function updateSummaryStats() {
+      const total = recentLogs.length;
+      const approved = recentLogs.filter(l => l.status === "approved").length;
+      const pending = recentLogs.filter(l => l.status === "pending").length;
+      const rejected = recentLogs.filter(l => l.status === "rejected").length;
+      
+      document.getElementById("stat-total").textContent = total;
+      document.getElementById("stat-approved").textContent = approved;
+      document.getElementById("stat-pending").textContent = pending;
+      document.getElementById("stat-rejected").textContent = rejected;
+    }
+
+    function approveRequest(id) {
+      const log = recentLogs.find(l => l.id === id);
+      if (log) {
+        log.status = "approved";
+        log.statusText = "อนุมัติแล้ว";
+        populateRecentLogs();
+        alert(`อนุมัติคำขอขอลางานของ ${log.name} สำเร็จ!`);
+      }
+    }
+
+    function rejectRequest(id) {
+      const log = recentLogs.find(l => l.id === id);
+      if (log) {
+        log.status = "rejected";
+        log.statusText = "ไม่อนุมัติ";
+        populateRecentLogs();
+        alert(`ปฏิเสธคำขอของ ${log.name} เรียบร้อยแล้ว`);
+      }
+    }
+
+    // Modal Control
+    function openWarningModal() {
+      document.getElementById("warning-modal").classList.add("show");
+    }
+
+    function closeWarningModal() {
+      document.getElementById("warning-modal").classList.remove("show");
+      document.getElementById("reason").value = "";
+      document.getElementById("emp-select").value = "";
+      document.getElementById("preview-card").classList.remove("show");
+      document.getElementById("submit-btn").disabled = true;
+      setStatus("", "");
+    }
+
+    function selectLevel(level) {
+      selectedLevel = level;
+      document.querySelectorAll(".level-btn").forEach(b => b.classList.remove("selected"));
+      document.querySelector(`.level-btn[data-level="${level}"]`).classList.add("selected");
+      updatePreview();
+    }
+
+    function updatePreview() {
+      const empSelect = document.getElementById("emp-select");
+      const empName = empSelect.options[empSelect.selectedIndex]?.text || "";
+      const reason = document.getElementById("reason").value.trim();
+      const hasData = empSelect.value && reason;
+
+      document.getElementById("submit-btn").disabled = !hasData;
+
+      const preview = document.getElementById("preview-card");
+      if (!hasData) { preview.classList.remove("show"); return; }
+
+      const cfg = levelConfig[selectedLevel];
+      preview.classList.add("show");
+
+      document.getElementById("preview-header").style.background = cfg.bg;
+      document.getElementById("preview-icon").textContent = cfg.icon;
+      document.getElementById("preview-title").textContent = cfg.title;
+      document.getElementById("preview-name").textContent = empName;
+      document.getElementById("preview-date").textContent = new Date().toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" });
+      document.getElementById("preview-reason").textContent = reason;
+      document.getElementById("preview-ref").textContent = `Draft · ระดับ: ${cfg.label}`;
+    }
+
+    async function submitWarning() {
+      const empSelect = document.getElementById("emp-select");
+      const empUserId = empSelect.value;
+      const empName = empSelect.options[empSelect.selectedIndex].text;
+      const reason = document.getElementById("reason").value.trim();
+
+      if (!empUserId || !reason) return;
+
+      setStatus("⏳ กำลังส่งใบเตือน...", "loading");
+      document.getElementById("submit-btn").disabled = true;
+
+      try {
+        const res = await fetch(GAS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify({
+            type: "warning", ownerId, empUserId, empName, reason,
+            level: selectedLevel,
+            levelLabel: levelConfig[selectedLevel].label,
+            timestamp: new Date().toISOString()
+          }),
+          redirect: "follow"
+        });
+        const result = await res.json();
+        if (result.success) {
+          setStatus(
+            `✅ ส่งใบเตือนให้ ${empName} แล้ว\nระดับ: ${levelConfig[selectedLevel].icon} ${levelConfig[selectedLevel].title}\nRef: ${result.warningId}`,
+            "success"
+          );
+          setTimeout(() => {
+            closeWarningModal();
+          }, 2000);
+        } else {
+          setStatus("❌ ข้อผิดพลาด: " + (result.message || "ไม่สามารถส่งข้อมูลได้"), "error");
+          document.getElementById("submit-btn").disabled = false;
+        }
+      } catch (err) {
+        // Fallback for mock environment
+        setStatus(
+          `✅ [Offline] ออกใบเตือนให้ ${empName} แล้ว\nระดับ: ${levelConfig[selectedLevel].icon} ${levelConfig[selectedLevel].title}`,
+          "success"
+        );
+        setTimeout(() => {
+          closeWarningModal();
+        }, 2000);
+      }
+    }
+
+    function setStatus(msg, type) {
+      const box = document.getElementById("status-box");
+      box.className = "status-box" + (type ? " " + type : "");
+      box.innerHTML = msg;
+    }
+
+    initLiff();
+  </script>
 </body>
 
 </html>

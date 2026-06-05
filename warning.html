@@ -591,12 +591,7 @@
       <div class="fade-in" style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 20px; padding: 28px 20px; text-align: center; margin-top: 40px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);">
         <div style="font-size: 48px; margin-bottom: 16px;">🔒</div>
         <h3 style="font-family: 'Prompt', sans-serif; font-size: 18px; font-weight: 700; color: #FCA5A5; margin-bottom: 10px;">เฉพาะฝ่ายบุคคลเท่านั้น (HR Access Only)</h3>
-        <p style="font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;">ขออภัย หน้าจอนี้ถูกจำกัดสิทธิ์ให้เข้าถึงได้เฉพาะผู้ใช้งานระดับฝ่ายบุคคล (HR) เท่านั้น เพื่อความปลอดภัยของข้อมูล</p>
-        
-        <div style="background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 12px; font-size: 12px; text-align: left; border: 1px solid var(--border);">
-          <span style="color: var(--muted); display: block; margin-bottom: 4px;">LINE User ID ของคุณ:</span>
-          <code id="visitor-user-id" style="color: var(--gold-lt); font-family: monospace; font-size: 11px; word-break: break-all;">—</code>
-        </div>
+        <p style="font-size: 13px; color: var(--muted); line-height: 1.6;">ขออภัย หน้าจอนี้ถูกจำกัดสิทธิ์ให้เข้าถึงได้เฉพาะผู้ใช้งานระดับฝ่ายบุคคล (HR) เท่านั้น เพื่อความปลอดภัยของข้อมูล</p>
       </div>
     </div>
 
@@ -886,7 +881,6 @@
       } else {
         document.getElementById("hr-authorized-content").style.display = "none";
         document.getElementById("hr-unauthorized-content").style.display = "block";
-        document.getElementById("visitor-user-id").textContent = userId;
         document.getElementById("hr-header-title").textContent = "🔒 จำกัดสิทธิ์เข้าถึง";
       }
     }
@@ -953,7 +947,7 @@
           <div class="hr-emp-circle">${initial}</div>
           <div class="hr-emp-info">
             <div class="hr-emp-name">${emp.name}</div>
-            <div class="hr-emp-sub">สำนักงานใหญ่ · ID: ${emp.userId.substring(0, 8)}...</div>
+            <div class="hr-emp-sub">สำนักงานใหญ่</div>
           </div>
           <div class="hr-emp-chevron">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>

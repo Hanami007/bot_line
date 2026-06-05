@@ -470,10 +470,6 @@
           <span class="info-label">ประเภทพนักงาน</span>
           <span class="info-value">พนักงานประจำ (Full-Time)</span>
         </div>
-        <div class="info-item">
-          <span class="info-label">LINE User ID</span>
-          <span class="info-value copyable" id="line-user-id" onclick="copyUserId()">— <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block;vertical-align:middle;margin-left:4px;opacity:0.6"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span>
-        </div>
       </div>
     </div>
 
@@ -590,7 +586,6 @@
 
         document.getElementById("header-name").textContent = profile.displayName;
         document.getElementById("profile-display-name").textContent = profile.displayName;
-        document.getElementById("line-user-id").innerHTML = `${profile.userId} <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block;vertical-align:middle;margin-left:4px;opacity:0.6"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`;
         
         if (profile.pictureUrl) {
           document.getElementById("header-pic").src = profile.pictureUrl;
@@ -609,7 +604,6 @@
         employeeName = "ทดสอบ";
         document.getElementById("header-name").textContent = "ทดสอบ (นอก LINE)";
         document.getElementById("profile-display-name").textContent = "ทดสอบ (นอก LINE)";
-        document.getElementById("line-user-id").innerHTML = `U_TEST_ID <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block;vertical-align:middle;margin-left:4px;opacity:0.6"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`;
         document.getElementById("header-initial").textContent = "ท";
         document.getElementById("profile-initial").textContent = "ท";
       }
@@ -619,13 +613,7 @@
       setTimeout(() => ls.style.display = "none", 500);
     }
 
-    function copyUserId() {
-      navigator.clipboard.writeText(lineUserId).then(() => {
-        alert("คัดลอก LINE User ID เรียบร้อยแล้ว!");
-      }).catch(err => {
-        console.error("Copy failed:", err);
-      });
-    }
+
 
     initLiff();
   </script>

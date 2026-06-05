@@ -13,6 +13,7 @@
     rel="stylesheet">
   <style>
     :root {
+      color-scheme: light;
       --bg: #F4F6FA;
       --card-bg: #FFFFFF;
       --navy: #0A1628;
@@ -367,21 +368,46 @@
     .form-input {
       width: 100%;
       padding: 12px 14px;
-      background: rgba(255, 255, 255, 0.05);
+      background: #F8FAFC;
       border: 1px solid var(--border);
       border-radius: 12px;
       font-size: 14px;
       font-family: 'Sarabun', sans-serif;
-      color: var(--white);
+      color: var(--text) !important;
       transition: border-color 0.2s;
       -webkit-appearance: none;
-      color-scheme: dark;
+      color-scheme: light;
     }
+
+    input[type="date"].form-input {
+      -webkit-appearance: none;
+      min-height: 45px;
+    }
+
+    input[type="date"].form-input::-webkit-date-and-time-value {
+      min-height: 1.5em;
+      color: var(--text) !important;
+      text-align: left;
+    }
+
+    input[type="date"].form-input::-webkit-datetime-edit {
+      color: var(--text) !important;
+      display: inline-flex;
+    }
+
+    input[type="date"].form-input::-webkit-datetime-edit-fields-wrapper,
+    input[type="date"].form-input::-webkit-datetime-edit-text,
+    input[type="date"].form-input::-webkit-datetime-edit-month-field,
+    input[type="date"].form-input::-webkit-datetime-edit-day-field,
+    input[type="date"].form-input::-webkit-datetime-edit-year-field {
+      color: var(--text) !important;
+    }
+
 
     .form-input:focus {
       outline: none;
-      border-color: rgba(201, 168, 76, 0.5);
-      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--navy-soft);
+      background: #FFFFFF;
     }
 
     .form-input::placeholder {

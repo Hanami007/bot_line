@@ -13,6 +13,7 @@
     rel="stylesheet">
   <style>
     :root {
+      color-scheme: light;
       --bg: #F4F6FA;
       --card-bg: #FFFFFF;
       --navy: #0A1628;
@@ -357,14 +358,15 @@
     }
     
     .modal-box {
-      background: var(--navy-mid);
+      background: #FFFFFF;
       width: 100%;
       max-width: 440px;
       border-radius: 24px;
       border: 1px solid var(--border);
       padding: 24px 20px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
       position: relative;
+      color: var(--text);
     }
     
     .modal-close {
@@ -386,14 +388,14 @@
     }
 
     .level-btn {
-      background: rgba(255, 255, 255, 0.05);
+      background: #F8FAFC;
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 14px 8px 12px;
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       text-align: center;
-      color: var(--white);
+      color: var(--text);
     }
 
     .level-btn[data-level="1"] { --accent-color: var(--warn1); }
@@ -402,7 +404,8 @@
 
     .level-btn.selected {
       border-color: var(--accent-color);
-      background: rgba(255, 255, 255, 0.08);
+      background: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .level-dot {
@@ -417,7 +420,7 @@
     .lv-name { font-family: 'Prompt', sans-serif; font-size: 12px; font-weight: 600; }
 
     .card {
-      background: rgba(255, 255, 255, 0.03);
+      background: #F8FAFC;
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 18px;
@@ -426,7 +429,23 @@
 
     .form-group { margin-bottom: 16px; }
     .form-label { font-family: 'Prompt', sans-serif; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; display: block; }
-    .form-input { width: 100%; padding: 12px 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 12px; font-size: 14px; color: var(--white); color-scheme: dark; }
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 14px;
+      color: var(--text) !important;
+      color-scheme: light;
+      font-family: 'Sarabun', sans-serif;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--navy-soft);
+      background: #FFFFFF;
+    }
     textarea.form-input { resize: none; height: 80px; }
 
     /* Preview card styles */
@@ -441,10 +460,10 @@
     .preview-header { padding: 10px 14px; display: flex; align-items: center; gap: 8px; }
     .preview-header-text { font-family: 'Prompt', sans-serif; font-size: 13px; font-weight: 700; color: white; }
     .preview-header-badge { margin-left: auto; font-size: 9px; padding: 2px 8px; border-radius: 20px; background: rgba(255, 255, 255, 0.15); }
-    .preview-body { background: rgba(255, 255, 255, 0.03); padding: 12px 14px; }
+    .preview-body { background: #F8FAFC; padding: 12px 14px; }
     .preview-row { display: flex; gap: 10px; margin-bottom: 8px; font-size: 12px; }
     .preview-row-label { color: var(--muted); min-width: 48px; }
-    .preview-row-value { color: var(--white); }
+    .preview-row-value { color: var(--text); }
     .preview-ref { font-size: 9px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px; }
 
     /* buttons */
@@ -736,7 +755,7 @@
 
   <!-- Employee Detail Modal -->
   <div class="modal-overlay" id="emp-detail-modal">
-    <div class="modal-box" style="max-width: 440px; background: #FFFFFF; color: #1E293B; border: 1px solid #E2E8F0;">
+    <div class="modal-box">
       <button class="modal-close" onclick="closeEmpDetailModal()" style="color: #64748B;">✕</button>
       <h3 style="font-family: 'Prompt', sans-serif; font-size: 16px; font-weight: 700; color: var(--navy-soft); margin-bottom: 16px; display:flex; align-items:center; gap:8px;">📊 สรุปการทำงานและวันลา</h3>
       
@@ -914,6 +933,7 @@
 
       // Load employees list & populate dashboard
       await loadEmployees();
+      await loadRealData();
       
       const ls = document.getElementById("loading-screen");
       ls.classList.add("fade-out");
@@ -982,48 +1002,228 @@
     let activeEmpName = "";
     let activeDetailMonth = 5; // Default to June (5)
 
+    // ===== REAL-TIME GOOGLE SHEET INTEGRATION =====
+    let allLeavesFromSheet = [];
+
+    async function fetchAllLeavesFromSheet() {
+      try {
+        const sheetName = encodeURIComponent("ลางาน");
+        const url = `https://docs.google.com/spreadsheets/d/1Wf6N4tRMlJqhal7K71El4rhfm4z4kq2RD9mqh4SEh7A/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+        const res = await fetch(url);
+        const text = await res.text();
+        
+        const start = text.indexOf('{');
+        const end = text.lastIndexOf('}') + 1;
+        if (start === -1 || end === -1) return [];
+        
+        const jsonStr = text.substring(start, end);
+        const json = JSON.parse(jsonStr);
+        
+        if (json.status !== 'ok') {
+          console.error("Sheet loading error:", json.errors);
+          return [];
+        }
+        
+        const table = json.table;
+        const cols = table.cols;
+        const rows = table.rows;
+        
+        if (!rows || rows.length === 0) return [];
+        
+        let colMap = {
+          timestamp: 0,
+          userId: 1,
+          name: 2,
+          type: 3,
+          dateStart: 4,
+          dateEnd: 5,
+          note: 6,
+          status: 7
+        };
+        
+        function isHeaderRow(rowValues) {
+          return rowValues.some(v => v && (v.includes("ชื่อ") || v.includes("พนักงาน") || v.includes("ลา") || v.includes("วันที่") || v.includes("Timestamp")));
+        }
+        
+        // Scan cols first
+        cols.forEach((col, idx) => {
+          const label = col.label || "";
+          if (label.includes("ประทับเวลา") || label.includes("Timestamp") || label.includes("วันที่ยื่น")) colMap.timestamp = idx;
+          else if (label.includes("ชื่อ") || label.includes("พนักงาน") || label.includes("Name") || label.includes("Employee")) colMap.name = idx;
+          else if (label.includes("Line") || label.includes("UserId")) colMap.userId = idx;
+          else if (label.includes("ประเภท") || label.includes("การลา") || label.includes("Type")) colMap.type = idx;
+          else if (label.includes("เริ่มต้น") || label.includes("Start")) colMap.dateStart = idx;
+          else if (label.includes("สิ้นสุด") || label.includes("End")) colMap.dateEnd = idx;
+          else if (label.includes("หมายเหตุ") || label.includes("Note")) colMap.note = idx;
+          else if (label.includes("สถานะ") || label.includes("Status") || label.includes("อนุมัติ")) colMap.status = idx;
+        });
+        
+        let startRowIdx = 0;
+        const firstRowValues = rows[0].c ? rows[0].c.map(cell => cell && cell.v ? String(cell.v) : "") : [];
+        if (isHeaderRow(firstRowValues)) {
+          startRowIdx = 1;
+          firstRowValues.forEach((val, idx) => {
+            if (val.includes("ประทับเวลา") || val.includes("Timestamp") || val.includes("วันที่ยื่น")) colMap.timestamp = idx;
+            else if (val.includes("ชื่อ") || val.includes("พนักงาน") || val.includes("Name") || val.includes("Employee")) colMap.name = idx;
+            else if (val.includes("Line") || val.includes("UserId")) colMap.userId = idx;
+            else if (val.includes("ประเภท") || val.includes("การลา") || val.includes("Type")) colMap.type = idx;
+            else if (val.includes("เริ่มต้น") || val.includes("Start")) colMap.dateStart = idx;
+            else if (val.includes("สิ้นสุด") || val.includes("End")) colMap.dateEnd = idx;
+            else if (val.includes("หมายเหตุ") || val.includes("Note")) colMap.note = idx;
+            else if (val.includes("สถานะ") || val.includes("Status") || val.includes("อนุมัติ")) colMap.status = idx;
+          });
+        }
+        
+        const leaves = [];
+        for (let i = startRowIdx; i < rows.length; i++) {
+          const r = rows[i].c;
+          if (!r) continue;
+          
+          const getVal = (idx) => {
+            if (idx === -1 || idx >= r.length || !r[idx]) return "";
+            if (r[idx].f) return r[idx].f;
+            return r[idx].v !== null && r[idx].v !== undefined ? String(r[idx].v) : "";
+          };
+          
+          const nameVal = getVal(colMap.name);
+          if (!nameVal.trim()) continue;
+          
+          leaves.push({
+            timestamp: getVal(colMap.timestamp),
+            userId: getVal(colMap.userId),
+            name: nameVal,
+            typeLabel: getVal(colMap.type),
+            dateStart: getVal(colMap.dateStart),
+            dateEnd: getVal(colMap.dateEnd),
+            note: getVal(colMap.note),
+            status: getVal(colMap.status) || "รออนุมัติ"
+          });
+        }
+        
+        allLeavesFromSheet = leaves;
+        return leaves;
+      } catch (err) {
+        console.error("Error fetching leaves from sheet:", err);
+        return [];
+      }
+    }
+
+    function getMonthAndYearFromDateStr(dateStr) {
+      if (!dateStr) return { month: -1, year: -1 };
+      
+      let d = new Date(dateStr);
+      if (!isNaN(d.getTime())) {
+        return { month: d.getMonth(), year: d.getFullYear() };
+      }
+      
+      if (dateStr.includes('/') || dateStr.includes('-')) {
+        const parts = dateStr.split(/[\/\-]/);
+        if (parts.length >= 3) {
+          let p0 = parseInt(parts[0]);
+          let p1 = parseInt(parts[1]);
+          let p2 = parseInt(parts[2]);
+          if (p0 > 1000) {
+            let yr = p0;
+            if (yr > 2500) yr -= 543;
+            return { month: p1 - 1, year: yr };
+          } else if (p2 > 1000) {
+            let yr = p2;
+            if (yr > 2500) yr -= 543;
+            return { month: p1 - 1, year: yr };
+          }
+        }
+      }
+      
+      const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+      const thaiFullMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+      
+      for (let i = 0; i < 12; i++) {
+        if (dateStr.includes(thaiMonths[i]) || dateStr.includes(thaiFullMonths[i])) {
+          const match = dateStr.match(/\b(25\d{2}|20\d{2})\b/);
+          let yr = 2026;
+          if (match) {
+            yr = parseInt(match[1]);
+            if (yr > 2500) yr -= 543;
+          }
+          return { month: i, year: yr };
+        }
+      }
+      
+      return { month: -1, year: -1 };
+    }
+
+    function getLeaveDaysList(dateStartStr, dateEndStr) {
+      if (!dateStartStr) return [];
+      if (!dateEndStr) dateEndStr = dateStartStr;
+      
+      let start = new Date(dateStartStr);
+      let end = new Date(dateEndStr);
+      
+      if (isNaN(start.getTime())) start = parseDateFallback(dateStartStr);
+      if (isNaN(end.getTime())) end = parseDateFallback(dateEndStr);
+      
+      if (!start || !end || isNaN(start.getTime()) || isNaN(end.getTime())) return [];
+      
+      if (start > end) {
+        let tmp = start;
+        start = end;
+        end = tmp;
+      }
+      
+      const days = [];
+      let curr = new Date(start);
+      while (curr <= end) {
+        days.push(new Date(curr));
+        curr.setDate(curr.getDate() + 1);
+      }
+      return days;
+    }
+
+    function parseDateFallback(str) {
+      if (!str) return null;
+      const m1 = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+      if (m1) {
+        let yr = parseInt(m1[1]);
+        if (yr > 2500) yr -= 543;
+        return new Date(yr, parseInt(m1[2]) - 1, parseInt(m1[3]));
+      }
+      const m2 = str.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+      if (m2) {
+        let yr = parseInt(m2[3]);
+        if (yr > 2500) yr -= 543;
+        return new Date(yr, parseInt(m2[2]) - 1, parseInt(m2[1]));
+      }
+      return null;
+    }
+
+    function formatThaiDate(dateStr) {
+      if (!dateStr) return "";
+      let d = new Date(dateStr);
+      if (isNaN(d.getTime())) d = parseDateFallback(dateStr);
+      if (!d || isNaN(d.getTime())) return dateStr;
+      
+      const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+      return `${d.getDate()} ${thaiMonths[d.getMonth()]} ${d.getFullYear() + 543}`;
+    }
+
     const simulatedEmpLeaves = {
       "นางสาวชบัญชิดา โชคธนอนันต์": {
-        5: [ // June
-          { date: "4 มิ.ย. 2569", type: "sick", typeLabel: "ลาป่วย", note: "ลาป่วยมีอาการไข้ขึ้นสูง ปวดหัวตัวร้อน" }
-        ],
-        4: [ // May
-          { date: "12 พ.ค. 2569", type: "vacation", typeLabel: "ลาพักร้อน", note: "ลาพักร้อนประจำปี เดินทางต่างจังหวัดกับครอบครัว" },
-          { date: "13 พ.ค. 2569", type: "vacation", typeLabel: "ลาพักร้อน", note: "ลาพักร้อนประจำปี เดินทางต่างจังหวัดกับครอบครัว" }
-        ]
+        5: [ { date: "4 มิ.ย. 2569", type: "sick", typeLabel: "ลาป่วย", note: "ลาป่วยมีอาการไข้ขึ้นสูง ปวดหัวตัวร้อน" } ],
+        4: [ { date: "12 พ.ค. 2569", type: "vacation", typeLabel: "ลาพักร้อน", note: "ลาพักร้อนประจำปี เดินทางต่างจังหวัดกับครอบครัว" },
+             { date: "13 พ.ค. 2569", type: "vacation", typeLabel: "ลาพักร้อน", note: "ลาพักร้อนประจำปี เดินทางต่างจังหวัดกับครอบครัว" } ]
       },
       "พงศกร ปัญญาเลิศ": {
-        5: [
-          { date: "8 มิ.ย. 2569", type: "personal", typeLabel: "ลากิจ", note: "ทำบัตรประชาชนใหม่และติดต่อราชการที่สำนักงานเขต" }
-        ],
+        5: [ { date: "8 มิ.ย. 2569", type: "personal", typeLabel: "ลากิจ", note: "ทำบัตรประชาชนใหม่และติดต่อราชการที่สำนักงานเขต" } ],
         4: []
       },
       "ศิริชัย แก้วกัญญา": {
         5: [],
-        4: [
-          { date: "20 พ.ค. 2569", type: "vacation", typeLabel: "ลาพักร้อน", note: "ลาพักร้อนประจำปี พักผ่อนส่วนตัว" },
-          { date: "21 พ.ค. 2569", type: "vacation", typeLabel: "ลาพักร้อน", note: "ลาพักร้อนประจำปี พักผ่อนส่วนตัว" }
-        ]
-      },
-      "วรรณวิสา ดีเลิศ": {
-        5: [
-          { date: "4 มิ.ย. 2569", type: "sick", typeLabel: "ลาป่วย", note: "ลาป่วยเนื่องจากเป็นไข้หวัดใหญ่ แพทย์สั่งพักฟื้น" }
-        ],
-        4: []
-      },
-      "สุดารัตน์ พูนสิน": {
-        5: [
-          { date: "15 มิ.ย. 2569", type: "personal", typeLabel: "ลากิจ", note: "ทำธุระติดต่อราชการเรื่องโอนที่ดิน" }
-        ],
-        4: []
-      },
-      "ธนาวุฒิ สมใจ": {
-        5: [],
-        4: []
+        4: [ { date: "20 พ.ค. 2569", type: "vacation", typeLabel: "ลาพักร้อน", note: "ลาพักร้อนประจำปี พักผ่อนส่วนตัว" },
+             { date: "21 พ.ค. 2569", type: "vacation", typeLabel: "ลาพักร้อน", note: "ลาพักร้อนประจำปี พักผ่อนส่วนตัว" } ]
       }
     };
 
-    function openEmpDetailModal(empName) {
+    async function openEmpDetailModal(empName) {
       activeEmpName = empName;
       activeDetailMonth = 5; // Default to June
       
@@ -1031,9 +1231,19 @@
       document.getElementById("emp-detail-name").textContent = empName;
       
       updateMonthTabs();
-      renderEmpLeaveStats();
+      
+      const container = document.getElementById("emp-detail-history-container");
+      container.innerHTML = `
+        <div style="text-align: center; color: #64748B; font-size: 12px; padding: 24px 0;">
+          ⏳ กำลังโหลดข้อมูลจาก Google Sheet...
+        </div>
+      `;
       
       document.getElementById("emp-detail-modal").classList.add("show");
+      
+      // Load fresh data and display
+      await loadRealData();
+      renderEmpLeaveStats();
     }
 
     function closeEmpDetailModal() {
@@ -1064,18 +1274,76 @@
     }
 
     function renderEmpLeaveStats() {
-      const empData = simulatedEmpLeaves[activeEmpName] || { 5: [], 4: [] };
-      const currentMonthLeaves = empData[activeDetailMonth] || [];
+      // Use real data from Google Sheet
+      const empLeaves = allLeavesFromSheet.filter(l => {
+        return l.name === activeEmpName || l.userId === activeEmpName;
+      });
       
+      const yearTarget = 2026;
       let sickCount = 0;
       let personalCount = 0;
       let vacationCount = 0;
       
-      currentMonthLeaves.forEach(l => {
-        if (l.type === "sick") sickCount++;
-        else if (l.type === "personal") personalCount++;
-        else if (l.type === "vacation") vacationCount++;
+      const timelineLogs = [];
+      
+      empLeaves.forEach(l => {
+        const days = getLeaveDaysList(l.dateStart, l.dateEnd);
+        let daysInMonthCount = 0;
+        
+        days.forEach(day => {
+          if (day.getMonth() === activeDetailMonth && day.getFullYear() === yearTarget) {
+            daysInMonthCount++;
+          }
+        });
+        
+        if (daysInMonthCount > 0) {
+          let type = "sick";
+          let typeLabel = l.typeLabel || "ลาป่วย";
+          if (typeLabel.includes("กิจ") || typeLabel.toLowerCase().includes("personal")) {
+            type = "personal";
+          } else if (typeLabel.includes("พักร้อน") || typeLabel.toLowerCase().includes("vacation")) {
+            type = "vacation";
+          }
+          
+          if (type === "sick") sickCount += daysInMonthCount;
+          else if (type === "personal") personalCount += daysInMonthCount;
+          else if (type === "vacation") vacationCount += daysInMonthCount;
+          
+          let dateStr = "";
+          if (l.dateStart === l.dateEnd || !l.dateEnd) {
+            dateStr = formatThaiDate(l.dateStart);
+          } else {
+            dateStr = `${formatThaiDate(l.dateStart)} - ${formatThaiDate(l.dateEnd)}`;
+          }
+          
+          timelineLogs.push({
+            date: dateStr,
+            type: type,
+            typeLabel: typeLabel,
+            note: `${l.note || "ไม่มีหมายเหตุ"} (${daysInMonthCount} วัน, สถานะ: ${l.status})`,
+            rawDate: l.dateStart
+          });
+        }
       });
+      
+      // Fallback to mock data if sheet data is empty for this employee (offline/mock support)
+      if (empLeaves.length === 0 && simulatedEmpLeaves[activeEmpName]) {
+        const mockData = simulatedEmpLeaves[activeEmpName][activeDetailMonth] || [];
+        mockData.forEach(m => {
+          timelineLogs.push({
+            date: m.date,
+            type: m.type,
+            typeLabel: m.typeLabel,
+            note: m.note,
+            rawDate: new Date().toISOString()
+          });
+          if (m.type === "sick") sickCount++;
+          else if (m.type === "personal") personalCount++;
+          else if (m.type === "vacation") vacationCount++;
+        });
+      }
+      
+      timelineLogs.sort((a, b) => new Date(b.rawDate) - new Date(a.rawDate));
       
       document.getElementById("stat-sick-days").textContent = `${sickCount} วัน`;
       document.getElementById("stat-personal-days").textContent = `${personalCount} วัน`;
@@ -1084,7 +1352,7 @@
       const container = document.getElementById("emp-detail-history-container");
       container.innerHTML = "";
       
-      if (currentMonthLeaves.length === 0) {
+      if (timelineLogs.length === 0) {
         container.innerHTML = `
           <div style="text-align: center; color: #64748B; font-size: 12px; padding: 24px 0;">
             ไม่มีประวัติการลาในเดือนนี้
@@ -1093,7 +1361,7 @@
         return;
       }
       
-      currentMonthLeaves.forEach(log => {
+      timelineLogs.forEach(log => {
         const item = document.createElement("div");
         item.style.background = "#F8FAFC";
         item.style.border = "1px solid #E2E8F0";
@@ -1152,6 +1420,44 @@
       });
     }
 
+    async function loadRealData() {
+      try {
+        const leaves = await fetchAllLeavesFromSheet();
+        if (leaves && leaves.length > 0) {
+          recentLogs = leaves.map((l, index) => {
+            let status = "pending";
+            let statusText = "รออนุมัติ";
+            if (l.status === "อนุมัติแล้ว" || l.status === "Approved") {
+              status = "approved";
+              statusText = "อนุมัติแล้ว";
+            } else if (l.status === "ไม่อนุมัติ" || l.status === "Rejected") {
+              status = "rejected";
+              statusText = "ไม่อนุมัติ";
+            }
+            
+            let dateStr = "";
+            if (l.dateStart === l.dateEnd || !l.dateEnd) {
+              dateStr = formatThaiDate(l.dateStart);
+            } else {
+              dateStr = `${formatThaiDate(l.dateStart)} - ${formatThaiDate(l.dateEnd)}`;
+            }
+            
+            return {
+              id: index + 1,
+              name: l.name,
+              type: `${l.typeLabel || "ลางาน"} (${dateStr})`,
+              status: status,
+              statusText: statusText,
+              raw: l
+            };
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load real sheet data:", err);
+      }
+      populateRecentLogs();
+    }
+
     function populateRecentLogs() {
       const container = document.getElementById("hr-recent-list-container");
       container.innerHTML = "";
@@ -1199,15 +1505,46 @@
     }
 
     function updateSummaryStats() {
-      const total = recentLogs.length;
-      const approved = recentLogs.filter(l => l.status === "approved").length;
-      const pending = recentLogs.filter(l => l.status === "pending").length;
-      const rejected = recentLogs.filter(l => l.status === "rejected").length;
+      const juneLogs = recentLogs.filter(log => {
+        if (!log.raw || !log.raw.dateStart) return true;
+        const dateInfo = getMonthAndYearFromDateStr(log.raw.dateStart);
+        return dateInfo.month === 5 && dateInfo.year === 2026;
+      });
+      
+      let totalDays = 0;
+      juneLogs.forEach(log => {
+        if (log.raw && log.raw.dateStart) {
+          const days = getLeaveDaysList(log.raw.dateStart, log.raw.dateEnd);
+          days.forEach(day => {
+            if (day.getMonth() === 5 && day.getFullYear() === 2026) {
+              totalDays++;
+            }
+          });
+        } else {
+          totalDays += log.id === 1 ? 2 : 1;
+        }
+      });
+      
+      const total = juneLogs.length;
+      const approved = juneLogs.filter(l => l.status === "approved").length;
+      const pending = juneLogs.filter(l => l.status === "pending").length;
+      const rejected = juneLogs.filter(l => l.status === "rejected").length;
       
       document.getElementById("stat-total").textContent = total;
+      const subTotal = document.querySelector(".hr-stat-box.all .hr-stat-sub");
+      if (subTotal) subTotal.textContent = `${totalDays} วันรวม`;
+      
       document.getElementById("stat-approved").textContent = approved;
+      const subApproved = document.querySelector(".hr-stat-box.approved .hr-stat-sub");
+      if (subApproved) subApproved.textContent = `${approved} รายการ`;
+      
       document.getElementById("stat-pending").textContent = pending;
+      const subPending = document.querySelector(".hr-stat-box.pending .hr-stat-sub");
+      if (subPending) subPending.textContent = `${pending} รายการ`;
+      
       document.getElementById("stat-rejected").textContent = rejected;
+      const subRejected = document.querySelector(".hr-stat-box.rejected .hr-stat-sub");
+      if (subRejected) subRejected.textContent = `${rejected} รายการ`;
     }
 
     function approveRequest(id) {

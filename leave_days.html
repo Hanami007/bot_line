@@ -13,20 +13,23 @@
     rel="stylesheet">
   <style>
     :root {
+      --bg: #F4F6FA;
+      --card-bg: #FFFFFF;
       --navy: #0A1628;
       --navy-mid: #122040;
-      --navy-soft: #1B3060;
-      --gold: #C9A84C;
-      --gold-lt: #E2C47A;
-      --gold-dim: rgba(201, 168, 76, 0.18);
+      --navy-soft: #1E3A8A;
+      --gold: #D97706;
+      --gold-lt: #F59E0B;
+      --gold-dim: rgba(217, 119, 6, 0.08);
       --white: #FFFFFF;
-      --muted: #8B9AB5;
-      --border: rgba(255, 255, 255, 0.08);
-      --card-bg: rgba(255, 255, 255, 0.04);
-      --sick: #F87171;
-      --personal: #60A5FA;
-      --vacation: #34D399;
-      --success: #22C55E;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --muted: #64748B;
+      --border: #E2E8F0;
+      --sick: #EF4444;
+      --personal: #3B82F6;
+      --vacation: #10B981;
+      --success: #10B981;
     }
 
     * {
@@ -38,8 +41,8 @@
 
     body {
       font-family: 'Sarabun', sans-serif;
-      background: var(--navy);
-      color: var(--white);
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       min-height: 100dvh;
       display: flex;
@@ -53,10 +56,7 @@
       content: '';
       position: fixed;
       inset: 0;
-      background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201, 168, 76, 0.10) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 60% at -10% 60%, rgba(27, 48, 96, 0.8) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 70% at 110% 30%, rgba(18, 32, 64, 0.9) 0%, transparent 60%);
+      background: var(--bg);
       pointer-events: none;
       z-index: 0;
     }
@@ -172,6 +172,7 @@
       font-family: 'Prompt', sans-serif;
       font-size: 15px;
       font-weight: 600;
+      color: var(--white);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -179,7 +180,7 @@
 
     .header-sub {
       font-size: 11px;
-      color: var(--muted);
+      color: #94A3B8;
       letter-spacing: 0.04em;
       margin-top: 1px;
     }
@@ -236,9 +237,7 @@
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 16px 14px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
       margin-bottom: 16px;
     }
 
@@ -254,13 +253,13 @@
       font-family: 'Prompt', sans-serif;
       font-size: 16px;
       font-weight: 600;
-      color: var(--gold-lt);
+      color: var(--navy);
     }
 
     .cal-btn {
-      background: rgba(255, 255, 255, 0.05);
+      background: #F1F5F9;
       border: 1px solid var(--border);
-      color: var(--white);
+      color: var(--text);
       padding: 6px 14px;
       border-radius: 8px;
       cursor: pointer;
@@ -273,6 +272,7 @@
     .cal-btn:active {
       background: var(--gold-dim);
       border-color: var(--gold);
+      color: var(--gold);
     }
 
     .calendar-grid {
@@ -372,15 +372,14 @@
       border-radius: 16px;
       padding: 14px 16px;
       margin-bottom: 20px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     }
 
     .detail-header {
       font-family: 'Prompt', sans-serif;
       font-size: 13px;
       font-weight: 600;
-      color: var(--white);
+      color: var(--text);
       margin-bottom: 8px;
       display: flex;
       align-items: center;
@@ -389,7 +388,7 @@
 
     .detail-body {
       font-size: 12.5px;
-      color: var(--muted);
+      color: var(--text-muted);
       line-height: 1.5;
     }
 
@@ -405,7 +404,7 @@
     .detail-badge.sick { background: var(--sick); }
     .detail-badge.personal { background: var(--personal); }
     .detail-badge.vacation { background: var(--vacation); }
-    .detail-badge.none { background: var(--border); color: var(--muted); }
+    .detail-badge.none { background: var(--border); color: var(--text-muted); }
 
     /* ── Leave Quota Cards ── */
     .quota-container {
@@ -419,8 +418,7 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 14px 16px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     }
 
     .quota-header {
@@ -446,18 +444,18 @@
     .quota-number {
       font-family: 'Prompt', sans-serif;
       font-size: 12px;
-      color: var(--muted);
+      color: var(--text-muted);
     }
 
     .quota-number strong {
       font-size: 16px;
-      color: var(--white);
+      color: var(--text);
     }
 
     .progress-bar-wrap {
       width: 100%;
       height: 6px;
-      background: rgba(255, 255, 255, 0.05);
+      background: #F1F5F9;
       border-radius: 3px;
       overflow: hidden;
       margin-bottom: 8px;
@@ -472,22 +470,19 @@
 
     .quota-card[data-type="sick"] .progress-bar {
       background: var(--sick);
-      box-shadow: 0 0 6px var(--sick);
     }
     .quota-card[data-type="personal"] .progress-bar {
       background: var(--personal);
-      box-shadow: 0 0 6px var(--personal);
     }
     .quota-card[data-type="vacation"] .progress-bar {
       background: var(--vacation);
-      box-shadow: 0 0 6px var(--vacation);
     }
 
     .quota-details {
       display: flex;
       justify-content: space-between;
       font-size: 10px;
-      color: var(--muted);
+      color: var(--text-muted);
     }
 
     /* ── Bottom Navigation Bar Styles ── */

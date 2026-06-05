@@ -13,19 +13,22 @@
     rel="stylesheet">
   <style>
     :root {
+      --bg: #F4F6FA;
+      --card-bg: #FFFFFF;
       --navy: #0A1628;
       --navy-mid: #122040;
-      --navy-soft: #1B3060;
-      --gold: #C9A84C;
-      --gold-lt: #E2C47A;
-      --gold-dim: rgba(201, 168, 76, 0.18);
+      --navy-soft: #1E3A8A;
+      --gold: #D97706;
+      --gold-lt: #F59E0B;
+      --gold-dim: rgba(217, 119, 6, 0.08);
       --white: #FFFFFF;
-      --muted: #8B9AB5;
-      --border: rgba(255, 255, 255, 0.08);
-      --card-bg: rgba(255, 255, 255, 0.04);
-      --success: #22C55E;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --muted: #64748B;
+      --border: #E2E8F0;
+      --success: #10B981;
       --warning: #F59E0B;
-      --info: #60A5FA;
+      --info: #3B82F6;
       --danger: #EF4444;
     }
 
@@ -38,8 +41,8 @@
 
     body {
       font-family: 'Sarabun', sans-serif;
-      background: var(--navy);
-      color: var(--white);
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       min-height: 100dvh;
       display: flex;
@@ -53,10 +56,7 @@
       content: '';
       position: fixed;
       inset: 0;
-      background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201, 168, 76, 0.10) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 60% at -10% 60%, rgba(27, 48, 96, 0.8) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 70% at 110% 30%, rgba(18, 32, 64, 0.9) 0%, transparent 60%);
+      background: var(--bg);
       pointer-events: none;
       z-index: 0;
     }
@@ -172,6 +172,7 @@
       font-family: 'Prompt', sans-serif;
       font-size: 15px;
       font-weight: 600;
+      color: var(--white);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -179,7 +180,7 @@
 
     .header-sub {
       font-size: 11px;
-      color: var(--muted);
+      color: #94A3B8;
       letter-spacing: 0.04em;
       margin-top: 1px;
     }
@@ -264,7 +265,7 @@
       height: 16px;
       border-radius: 50%;
       background: var(--navy-soft);
-      border: 3px solid var(--navy);
+      border: 3px solid var(--bg);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -296,8 +297,7 @@
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 12px 14px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
     }
 
     .timeline-header {
@@ -311,22 +311,22 @@
       font-family: 'Prompt', sans-serif;
       font-size: 13px;
       font-weight: 600;
-      color: var(--white);
+      color: var(--text);
     }
 
     .timeline-time {
       font-size: 11px;
-      color: var(--muted);
+      color: var(--text-muted);
     }
 
     .timeline-body {
       font-size: 12.5px;
-      color: var(--muted);
+      color: var(--text-muted);
       line-height: 1.5;
     }
 
     .timeline-body strong {
-      color: var(--white);
+      color: var(--text);
     }
 
     /* ── Bottom Navigation Bar Styles ── */

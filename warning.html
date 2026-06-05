@@ -13,17 +13,20 @@
     rel="stylesheet">
   <style>
     :root {
+      --bg: #F4F6FA;
+      --card-bg: #FFFFFF;
       --navy: #0A1628;
       --navy-mid: #122040;
-      --navy-soft: #1B3060;
-      --gold: #C9A84C;
-      --gold-lt: #E2C47A;
-      --gold-dim: rgba(201, 168, 76, 0.18);
+      --navy-soft: #1E3A8A;
+      --gold: #D97706;
+      --gold-lt: #F59E0B;
+      --gold-dim: rgba(217, 119, 6, 0.08);
       --white: #FFFFFF;
-      --muted: #8B9AB5;
-      --border: rgba(255, 255, 255, 0.08);
-      --card-bg: rgba(255, 255, 255, 0.04);
-      --success: #22C55E;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --muted: #64748B;
+      --border: #E2E8F0;
+      --success: #10B981;
       --warn1: #F59E0B;
       --warn2: #EF4444;
       --warn3: #A855F7;
@@ -38,8 +41,8 @@
 
     body {
       font-family: 'Sarabun', sans-serif;
-      background: var(--navy);
-      color: var(--white);
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       min-height: 100dvh;
       display: flex;
@@ -53,10 +56,7 @@
       content: '';
       position: fixed;
       inset: 0;
-      background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201, 168, 76, 0.10) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 60% at -10% 60%, rgba(27, 48, 96, 0.8) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 70% at 110% 30%, rgba(18, 32, 64, 0.9) 0%, transparent 60%);
+      background: var(--bg);
       pointer-events: none;
       z-index: 0;
     }
@@ -831,9 +831,9 @@
 
     // ── HR USER ID RESTRICTION LIST ──
     const HR_USER_IDS = [
-      "Ucbd89d2b178eaa98580d81bccbb9f533", // Pongsakorn
-      "U_TEST_OWNER",                     // Mock Test ID 1
-      "U_TEST_ID"                         // Mock Test ID 2
+      "U5a0cb5eaa535ab9e8da4a38df6d6a0ee",   // รหัสแอดมิน/เจ้าของตามสคริปต์ GAS
+      "U_TEST_OWNER",                      // รหัสจำลองสำหรับทดสอบนอก LINE (Local Test)
+      "U_TEST_ID"                          // รหัสจำลองสำหรับทดสอบ
     ];
 
     let selectedLevel = 1;

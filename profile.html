@@ -13,18 +13,21 @@
     rel="stylesheet">
   <style>
     :root {
+      --bg: #F4F6FA;
+      --card-bg: #FFFFFF;
       --navy: #0A1628;
       --navy-mid: #122040;
-      --navy-soft: #1B3060;
-      --gold: #C9A84C;
-      --gold-lt: #E2C47A;
-      --gold-dim: rgba(201, 168, 76, 0.18);
+      --navy-soft: #1E3A8A;
+      --gold: #D97706;
+      --gold-lt: #F59E0B;
+      --gold-dim: rgba(217, 119, 6, 0.08);
       --white: #FFFFFF;
-      --muted: #8B9AB5;
-      --border: rgba(255, 255, 255, 0.08);
-      --card-bg: rgba(255, 255, 255, 0.04);
-      --success: #22C55E;
-      --info: #60A5FA;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --muted: #64748B;
+      --border: #E2E8F0;
+      --success: #10B981;
+      --info: #3B82F6;
     }
 
     * {
@@ -36,8 +39,8 @@
 
     body {
       font-family: 'Sarabun', sans-serif;
-      background: var(--navy);
-      color: var(--white);
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       min-height: 100dvh;
       display: flex;
@@ -51,10 +54,7 @@
       content: '';
       position: fixed;
       inset: 0;
-      background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201, 168, 76, 0.10) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 60% at -10% 60%, rgba(27, 48, 96, 0.8) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 70% at 110% 30%, rgba(18, 32, 64, 0.9) 0%, transparent 60%);
+      background: var(--bg);
       pointer-events: none;
       z-index: 0;
     }
@@ -170,6 +170,7 @@
       font-family: 'Prompt', sans-serif;
       font-size: 15px;
       font-weight: 600;
+      color: var(--white);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -217,9 +218,7 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
       margin-bottom: 20px;
     }
 
@@ -250,13 +249,13 @@
       font-family: 'Prompt', sans-serif;
       font-size: 20px;
       font-weight: 600;
-      color: var(--white);
+      color: var(--text);
       margin-bottom: 4px;
     }
 
     .profile-role {
       font-size: 13px;
-      color: var(--gold-lt);
+      color: var(--navy-soft);
       letter-spacing: 0.04em;
       margin-bottom: 20px;
       font-weight: 500;
@@ -285,11 +284,11 @@
     }
 
     .info-label {
-      color: var(--muted);
+      color: var(--text-muted);
     }
 
     .info-value {
-      color: var(--white);
+      color: var(--text);
       font-weight: 500;
     }
 
@@ -328,8 +327,8 @@
     .primary-btn {
       width: 100%;
       padding: 16px;
-      background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 100%);
-      color: var(--navy);
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+      color: var(--white);
       font-size: 15px;
       font-weight: 600;
       font-family: 'Prompt', sans-serif;
@@ -341,7 +340,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 20px rgba(201, 168, 76, 0.3);
+      box-shadow: 0 4px 20px rgba(10, 22, 40, 0.12);
       text-decoration: none;
     }
 
